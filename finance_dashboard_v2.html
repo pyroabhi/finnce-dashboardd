@@ -1,232 +1,159 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Finance Dashboard</title>
+  <title>A&G Finance</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #080810;
-      --card: #0f0f1a;
-      --card2: #14141f;
-      --border: #1e1e2e;
-      --text: #e2e2f0;
-      --muted: #5a5a7a;
-      --accent: #7c6af7;
-      --accent-soft: rgba(124,106,247,0.12);
-      --green: #2dd4a0;
-      --green-soft: rgba(45,212,160,0.1);
-      --yellow: #f5c542;
-      --yellow-soft: rgba(245,197,66,0.1);
-      --red: #f25d5d;
-      --red-soft: rgba(242,93,93,0.1);
-      --orange: #fb923c;
-      --orange-soft: rgba(251,146,60,0.1);
-      --mono: 'DM Mono', monospace;
-      --sans: 'Sora', sans-serif;
+      --bg:#080810; --card:#0f0f1a; --card2:#14141f; --border:#1e1e2e;
+      --text:#e2e2f0; --muted:#5a5a7a;
+      --accent:#7c6af7; --accent-soft:rgba(124,106,247,.12);
+      --green:#2dd4a0; --green-soft:rgba(45,212,160,.1);
+      --yellow:#f5c542; --yellow-soft:rgba(245,197,66,.1);
+      --red:#f25d5d; --red-soft:rgba(242,93,93,.1);
+      --orange:#fb923c; --orange-soft:rgba(251,146,60,.1);
+      --mono:'DM Mono',monospace; --sans:'Sora',sans-serif;
     }
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height:100vh; }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;}
+    .app{display:flex;min-height:100vh;}
 
-    /* ── Layout ── */
-    .app { display:flex; min-height:100vh; }
-    .sidebar {
-      width:200px; background:var(--card); border-right:1px solid var(--border);
-      padding:1.5rem 1rem; display:flex; flex-direction:column;
-      position:fixed; height:100vh; z-index:100;
+    /* sidebar */
+    .sidebar{width:210px;background:var(--card);border-right:1px solid var(--border);padding:1.5rem 1rem;display:flex;flex-direction:column;position:fixed;height:100vh;z-index:100;}
+    .logo{font-size:1rem;font-weight:700;color:var(--accent);margin-bottom:.2rem;letter-spacing:-.02em;}
+    .logo-sub{font-family:var(--mono);font-size:.68rem;color:var(--muted);margin-bottom:1.75rem;}
+    .nav{display:flex;flex-direction:column;gap:.2rem;flex:1;}
+    .nav-item{padding:.6rem .9rem;border-radius:8px;cursor:pointer;font-size:.82rem;color:var(--muted);display:flex;align-items:center;gap:.6rem;transition:all .15s;font-weight:500;}
+    .nav-item:hover{background:var(--card2);color:var(--text);}
+    .nav-item.active{background:var(--accent-soft);color:var(--accent);}
+    .sync-area{font-size:.72rem;color:var(--muted);padding:.5rem 0;border-top:1px solid var(--border);}
+    .sync-btn{margin-top:.4rem;background:none;border:1px solid var(--border);color:var(--muted);padding:.35rem .7rem;border-radius:6px;cursor:pointer;font-size:.72rem;width:100%;transition:all .15s;font-family:var(--sans);}
+    .sync-btn:hover{border-color:var(--accent);color:var(--accent);}
+
+    /* main */
+    .main{margin-left:210px;padding:2rem;max-width:980px;}
+    .tab{display:none;} .tab.active{display:block;}
+
+    /* cards */
+    .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.25rem;}
+    .card-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem;}
+    .card-grid .card{padding:1.1rem;}
+    .card-label{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.4rem;font-family:var(--mono);}
+    .card-value{font-size:1.35rem;font-weight:700;font-family:var(--mono);}
+    .card-sub{font-size:.7rem;color:var(--muted);margin-top:.2rem;}
+    .green{color:var(--green);} .yellow{color:var(--yellow);} .red{color:var(--red);} .accent{color:var(--accent);}
+
+    .page-header{margin-bottom:1.5rem;}
+    .page-title{font-size:1.55rem;font-weight:700;letter-spacing:-.03em;}
+    .page-title span{color:var(--accent);}
+    .page-sub{font-size:.8rem;color:var(--muted);margin-top:.3rem;}
+
+    /* traffic light */
+    .savings-light{display:inline-flex;align-items:center;gap:.4rem;padding:.3rem .75rem;border-radius:99px;font-size:.78rem;font-weight:600;margin-top:.4rem;}
+    .light-green{background:var(--green-soft);color:var(--green);}
+    .light-yellow{background:var(--yellow-soft);color:var(--yellow);}
+    .light-red{background:var(--red-soft);color:var(--red);}
+
+    .section-title{font-size:.75rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.85rem;font-family:var(--mono);}
+
+    /* tables */
+    table{width:100%;border-collapse:collapse;font-size:.84rem;}
+    th{text-align:left;padding:.55rem .75rem;color:var(--muted);font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;font-weight:500;border-bottom:1px solid var(--border);font-family:var(--mono);}
+    td{padding:.6rem .75rem;border-bottom:1px solid var(--border);}
+    tr:last-child td{border-bottom:none;}
+    tr:hover td{background:var(--card2);}
+
+    /* inputs — KEY FIX: no re-render on every keystroke */
+    .edit-input{background:transparent;border:none;color:var(--text);font-family:var(--mono);font-size:.84rem;width:100%;outline:none;padding:2px 4px;border-radius:4px;transition:background .15s;}
+    .edit-input:focus{background:var(--card2);outline:1px solid var(--accent);}
+    .big-input{background:var(--card2);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:.95rem;padding:.45rem .75rem;border-radius:8px;width:100%;outline:none;transition:border .15s;}
+    .big-input:focus{border-color:var(--accent);}
+    .week-input{background:var(--card2);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:.84rem;padding:.38rem .65rem;border-radius:6px;width:130px;outline:none;transition:border .15s;}
+    .week-input:focus{border-color:var(--accent);}
+
+    .add-btn{background:none;border:1px dashed var(--border);color:var(--muted);padding:.45rem .9rem;border-radius:8px;cursor:pointer;font-size:.8rem;margin-top:.7rem;width:100%;transition:all .15s;font-family:var(--sans);}
+    .add-btn:hover{border-color:var(--accent);color:var(--accent);}
+    .del-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:.78rem;padding:2px 6px;border-radius:4px;transition:all .15s;}
+    .del-btn:hover{color:var(--red);background:var(--red-soft);}
+    .pin-btn{background:none;border:none;cursor:pointer;font-size:.85rem;padding:2px 5px;border-radius:4px;transition:all .15s;color:var(--muted);}
+    .pin-btn.pinned{color:var(--yellow);}
+    .pin-btn:hover{color:var(--yellow);}
+
+    /* progress */
+    .progress-wrap{background:var(--border);border-radius:99px;height:6px;overflow:hidden;margin-top:.35rem;}
+    .progress-fill{height:100%;border-radius:99px;transition:width .4s;}
+    .fill-green{background:var(--green);} .fill-yellow{background:var(--yellow);} .fill-red{background:var(--red);} .fill-accent{background:var(--accent);} .fill-orange{background:var(--orange);}
+
+    /* emergency fund */
+    .ef-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;}
+    .ef-card{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:1rem;}
+    .ef-label{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-family:var(--mono);}
+    .ef-value{font-size:1.2rem;font-weight:700;font-family:var(--mono);margin:.3rem 0;}
+    .ef-sub{font-size:.7rem;color:var(--muted);}
+
+    /* buy list priority badges */
+    .pri-badge{display:inline-block;font-size:.7rem;font-family:var(--mono);padding:.2rem .55rem;border-radius:4px;font-weight:600;cursor:pointer;user-select:none;}
+    .pri-p1{background:rgba(242,93,93,.15);color:var(--red);}
+    .pri-p2{background:var(--yellow-soft);color:var(--yellow);}
+    .pri-p3{background:var(--accent-soft);color:var(--accent);}
+    .pri-none{background:var(--card2);color:var(--muted);}
+    .next-badge{display:inline-block;font-size:.68rem;font-family:var(--mono);padding:.2rem .5rem;border-radius:4px;background:var(--green-soft);color:var(--green);font-weight:600;}
+    .bought-badge{display:inline-block;font-size:.68rem;font-family:var(--mono);padding:.2rem .5rem;border-radius:4px;background:var(--card2);color:var(--muted);}
+
+    /* debt */
+    .debt-card{background:linear-gradient(135deg,rgba(124,106,247,.08) 0%,rgba(45,212,160,.05) 100%);border:1px solid rgba(124,106,247,.2);border-radius:12px;padding:1.25rem;margin-bottom:1.5rem;}
+    .debt-months{font-family:var(--mono);font-size:1.7rem;font-weight:700;color:var(--accent);}
+    .debt-months span{font-size:.8rem;color:var(--muted);font-weight:400;}
+
+    /* alert chips */
+    .chip{display:inline-block;font-size:.68rem;padding:.2rem .5rem;border-radius:4px;font-family:var(--mono);background:var(--card2);color:var(--muted);}
+    .alert-75{background:var(--yellow-soft);color:var(--yellow);}
+    .alert-90{background:var(--orange-soft);color:var(--orange);}
+    .alert-over{background:var(--red-soft);color:var(--red);}
+
+    /* layout helpers */
+    .gap{margin-bottom:1.25rem;} .gap-sm{margin-bottom:.75rem;}
+    .flex-row{display:flex;gap:1rem;}
+    .flex-row .card{flex:1;}
+    .row-pair{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.25rem;}
+    .inline-label{font-size:.76rem;color:var(--muted);margin-bottom:.3rem;display:block;}
+
+    /* pinned items on overview */
+    .pinned-item{display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid var(--border);}
+    .pinned-item:last-child{border-bottom:none;}
+
+    /* mobile */
+    .mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);padding:.4rem 0;z-index:200;}
+    .mobile-nav-inner{display:flex;justify-content:space-around;}
+    .mnav-item{display:flex;flex-direction:column;align-items:center;gap:.15rem;padding:.35rem .6rem;cursor:pointer;font-size:.6rem;color:var(--muted);border-radius:6px;}
+    .mnav-item.active{color:var(--accent);}
+    .mnav-icon{font-size:1rem;}
+
+    @media(max-width:700px){
+      .sidebar{display:none;} .main{margin-left:0;padding:1rem 1rem 5rem;}
+      .mobile-nav{display:block;} .card-grid{grid-template-columns:1fr 1fr;}
+      .ef-grid{grid-template-columns:1fr;} .row-pair{grid-template-columns:1fr;}
+      .flex-row{flex-direction:column;}
     }
-    .logo { font-size:1.1rem; font-weight:700; color:var(--accent); margin-bottom:2rem; letter-spacing:-.02em; }
-    .logo span { font-family:var(--mono); font-size:.7rem; color:var(--muted); display:block; margin-top:2px; }
-    .nav { display:flex; flex-direction:column; gap:.25rem; flex:1; }
-    .nav-item {
-      padding:.65rem .9rem; border-radius:8px; cursor:pointer;
-      font-size:.85rem; color:var(--muted); display:flex; align-items:center; gap:.6rem;
-      transition:all .15s; font-weight:500;
-    }
-    .nav-item:hover { background:var(--card2); color:var(--text); }
-    .nav-item.active { background:var(--accent-soft); color:var(--accent); }
-    .sync-area { font-size:.75rem; color:var(--muted); padding:.5rem 0; border-top:1px solid var(--border); }
-    .sync-btn {
-      margin-top:.5rem; background:none; border:1px solid var(--border);
-      color:var(--muted); padding:.4rem .8rem; border-radius:6px; cursor:pointer;
-      font-size:.75rem; width:100%; transition:all .15s; font-family:var(--sans);
-    }
-    .sync-btn:hover { border-color:var(--accent); color:var(--accent); }
-    .main { margin-left:200px; padding:2rem; max-width:960px; }
-
-    /* ── Tabs ── */
-    .tab { display:none; }
-    .tab.active { display:block; }
-
-    /* ── Cards ── */
-    .card {
-      background:var(--card); border:1px solid var(--border);
-      border-radius:12px; padding:1.25rem;
-    }
-    .card-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin-bottom:1.5rem; }
-    .card-grid .card { padding:1.1rem; }
-    .card-label { font-size:.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; margin-bottom:.4rem; font-family:var(--mono); }
-    .card-value { font-size:1.4rem; font-weight:700; font-family:var(--mono); }
-    .card-sub { font-size:.72rem; color:var(--muted); margin-top:.25rem; }
-    .green { color:var(--green); }
-    .yellow { color:var(--yellow); }
-    .red { color:var(--red); }
-    .accent { color:var(--accent); }
-
-    /* ── Page header ── */
-    .page-header { margin-bottom:1.5rem; }
-    .page-title { font-size:1.6rem; font-weight:700; letter-spacing:-.03em; }
-    .page-title span { color:var(--accent); }
-    .page-sub { font-size:.82rem; color:var(--muted); margin-top:.3rem; }
-
-    /* ── Savings traffic light ── */
-    .savings-light {
-      display:inline-flex; align-items:center; gap:.5rem;
-      padding:.35rem .8rem; border-radius:99px; font-size:.8rem; font-weight:600; margin-top:.4rem;
-    }
-    .light-green { background:var(--green-soft); color:var(--green); }
-    .light-yellow { background:var(--yellow-soft); color:var(--yellow); }
-    .light-red { background:var(--red-soft); color:var(--red); }
-
-    /* ── Section titles ── */
-    .section-title {
-      font-size:.8rem; font-weight:600; color:var(--muted); text-transform:uppercase;
-      letter-spacing:.07em; margin-bottom:.9rem; font-family:var(--mono);
-    }
-
-    /* ── Tables ── */
-    table { width:100%; border-collapse:collapse; font-size:.85rem; }
-    th { text-align:left; padding:.6rem .8rem; color:var(--muted); font-size:.72rem; text-transform:uppercase; letter-spacing:.05em; font-weight:500; border-bottom:1px solid var(--border); font-family:var(--mono); }
-    td { padding:.65rem .8rem; border-bottom:1px solid var(--border); }
-    tr:last-child td { border-bottom:none; }
-    tr:hover td { background:var(--card2); }
-
-    /* ── Inputs ── */
-    .edit-input {
-      background:transparent; border:none; color:var(--text); font-family:var(--mono);
-      font-size:.85rem; width:100%; outline:none; padding:2px 4px; border-radius:4px;
-      transition:background .15s;
-    }
-    .edit-input:focus { background:var(--card2); outline:1px solid var(--accent); }
-    .add-btn {
-      background:none; border:1px dashed var(--border); color:var(--muted);
-      padding:.5rem 1rem; border-radius:8px; cursor:pointer; font-size:.82rem;
-      margin-top:.75rem; width:100%; transition:all .15s; font-family:var(--sans);
-    }
-    .add-btn:hover { border-color:var(--accent); color:var(--accent); }
-    .del-btn {
-      background:none; border:none; color:var(--muted); cursor:pointer;
-      font-size:.8rem; padding:2px 6px; border-radius:4px; transition:all .15s;
-    }
-    .del-btn:hover { color:var(--red); background:var(--red-soft); }
-
-    /* ── Progress bars ── */
-    .progress-wrap { background:var(--border); border-radius:99px; height:6px; overflow:hidden; margin-top:.4rem; }
-    .progress-fill { height:100%; border-radius:99px; transition:width .4s; }
-    .fill-green { background:var(--green); }
-    .fill-yellow { background:var(--yellow); }
-    .fill-red { background:var(--red); }
-    .fill-accent { background:var(--accent); }
-    .fill-orange { background:var(--orange); }
-
-    /* ── Emergency fund ── */
-    .ef-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem; }
-    .ef-card { background:var(--card2); border:1px solid var(--border); border-radius:10px; padding:1rem; }
-    .ef-label { font-size:.7rem; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; font-family:var(--mono); }
-    .ef-value { font-size:1.25rem; font-weight:700; font-family:var(--mono); margin:.3rem 0; }
-    .ef-sub { font-size:.72rem; color:var(--muted); }
-
-    /* ── Buy list unlock ── */
-    .unlock-badge {
-      display:inline-block; font-size:.68rem; font-family:var(--mono);
-      padding:.2rem .5rem; border-radius:4px; font-weight:500;
-    }
-    .unlocked { background:var(--green-soft); color:var(--green); }
-    .locked-badge { background:var(--card2); color:var(--muted); }
-
-    /* ── Debt counter ── */
-    .debt-card {
-      background: linear-gradient(135deg, rgba(124,106,247,.08) 0%, rgba(45,212,160,.05) 100%);
-      border:1px solid rgba(124,106,247,.2); border-radius:12px; padding:1.25rem;
-      margin-bottom:1.5rem;
-    }
-    .debt-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:.75rem; }
-    .debt-title { font-size:.85rem; font-weight:600; }
-    .debt-months { font-family:var(--mono); font-size:1.8rem; font-weight:700; color:var(--accent); }
-    .debt-months span { font-size:.85rem; color:var(--muted); font-weight:400; }
-
-    /* ── Alert badges ── */
-    .alert-75 { background:var(--yellow-soft); color:var(--yellow); }
-    .alert-90 { background:var(--orange-soft); color:var(--orange); }
-    .alert-over { background:var(--red-soft); color:var(--red); }
-
-    /* ── Weekly tracker ── */
-    .week-entry { display:flex; gap:.75rem; align-items:center; margin-bottom:.5rem; }
-    .week-tag { font-family:var(--mono); font-size:.72rem; color:var(--muted); min-width:60px; }
-    .week-input {
-      background:var(--card2); border:1px solid var(--border); color:var(--text);
-      font-family:var(--mono); font-size:.85rem; padding:.4rem .7rem;
-      border-radius:6px; width:140px; outline:none; transition:border .15s;
-    }
-    .week-input:focus { border-color:var(--accent); }
-    .week-label { font-size:.8rem; color:var(--muted); flex:1; }
-
-    /* ── Gap ── */
-    .gap { margin-bottom:1.25rem; }
-    .gap-sm { margin-bottom:.75rem; }
-    .flex-row { display:flex; gap:1rem; }
-    .flex-row .card { flex:1; }
-
-    /* ── Mobile nav ── */
-    .mobile-nav {
-      display:none; position:fixed; bottom:0; left:0; right:0;
-      background:var(--card); border-top:1px solid var(--border);
-      padding:.5rem 0; z-index:200;
-    }
-    .mobile-nav-inner { display:flex; justify-content:space-around; }
-    .mnav-item { display:flex; flex-direction:column; align-items:center; gap:.2rem; padding:.4rem .8rem; cursor:pointer; font-size:.62rem; color:var(--muted); border-radius:8px; }
-    .mnav-item.active { color:var(--accent); }
-    .mnav-icon { font-size:1.1rem; }
-
-    @media(max-width:700px) {
-      .sidebar { display:none; }
-      .main { margin-left:0; padding:1rem 1rem 5rem; }
-      .mobile-nav { display:block; }
-      .card-grid { grid-template-columns:1fr 1fr; }
-      .ef-grid { grid-template-columns:1fr; }
-    }
-
-    /* ── Misc ── */
-    .chip {
-      display:inline-block; font-size:.68rem; padding:.2rem .5rem;
-      border-radius:4px; font-family:var(--mono); background:var(--card2); color:var(--muted);
-    }
-    .row-pair { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.25rem; }
-    select.edit-input { cursor:pointer; }
-    .inline-label { font-size:.78rem; color:var(--muted); margin-bottom:.3rem; display:block; }
-    .big-input {
-      background:var(--card2); border:1px solid var(--border); color:var(--text);
-      font-family:var(--mono); font-size:1rem; padding:.5rem .8rem;
-      border-radius:8px; width:100%; outline:none; transition:border .15s;
-    }
-    .big-input:focus { border-color:var(--accent); }
   </style>
 </head>
 <body>
 <div class="app">
 
-  <!-- Sidebar -->
+  <!-- SIDEBAR -->
   <nav class="sidebar">
-    <div class="logo">finance.<span>v4 — Abhishek</span></div>
+    <div class="logo">Abhishek & Garima</div>
+    <div class="logo-sub">finance dashboard v8</div>
     <div class="nav">
       <div class="nav-item active" onclick="switchTab('overview')">◉ &nbsp;Overview</div>
       <div class="nav-item" onclick="switchTab('money')">₹ &nbsp;Money</div>
-      <div class="nav-item" onclick="switchTab('weekly')">📅 &nbsp;Weekly</div>
+      <div class="nav-item" onclick="switchTab('weekly')">📅 &nbsp;Sunday Check-in</div>
       <div class="nav-item" onclick="switchTab('buylist')">◎ &nbsp;Buy List</div>
       <div class="nav-item" onclick="switchTab('savings')">◈ &nbsp;Savings</div>
       <div class="nav-item" onclick="switchTab('fy')">📊 &nbsp;FY Summary</div>
+      <div class="nav-item" onclick="switchTab('owed')">💸 &nbsp;Owed to Me</div>
     </div>
     <div class="sync-area">
       <div id="sync-status">connecting…</div>
@@ -235,17 +162,15 @@
     </div>
   </nav>
 
-  <!-- Main -->
   <main class="main">
 
     <!-- ══ OVERVIEW ══ -->
     <div id="tab-overview" class="tab active">
       <div class="page-header">
-        <div class="page-title">Good <span id="greeting-time">morning</span>.</div>
-        <div class="page-sub">Here's where you stand this month.</div>
+        <div class="page-title">Good <span id="greeting-time">morning</span>, Abhishek.</div>
+        <div class="page-sub">Here's where you and Garima stand this month.</div>
       </div>
 
-      <!-- KPI cards -->
       <div class="card-grid">
         <div class="card">
           <div class="card-label">Total Income</div>
@@ -269,69 +194,51 @@
         </div>
       </div>
 
-      <!-- Debt Freedom Counter -->
-      <div class="debt-card">
-        <div class="debt-header">
+      <!-- Debt Counter -->
+      <div class="debt-card gap">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.65rem">
           <div>
             <div class="card-label">💳 Debt Freedom Counter</div>
-            <div class="debt-title">Education Loan — ₹38,000 EMI</div>
+            <div style="font-size:.85rem;font-weight:600">Education Loan — ₹38,000 EMI/month</div>
           </div>
-          <div style="text-align:right">
-            <div class="debt-months" id="debt-months">—<span> months left</span></div>
-          </div>
+          <div class="debt-months" id="debt-months">—<span> months left</span></div>
         </div>
-        <div class="progress-wrap" style="height:8px">
-          <div class="progress-fill fill-accent" id="debt-progress" style="width:0%"></div>
+        <div class="progress-wrap" style="height:8px"><div class="progress-fill fill-accent" id="debt-progress" style="width:0%"></div></div>
+        <div style="display:flex;justify-content:space-between;margin-top:.4rem;font-size:.7rem;color:var(--muted)">
+          <span>Started</span><span id="debt-end-label">Freedom date: —</span>
         </div>
-        <div style="display:flex;justify-content:space-between;margin-top:.5rem;font-size:.72rem;color:var(--muted)">
-          <span>Started</span>
-          <span id="debt-end-label">Freedom date: —</span>
-        </div>
-        <div style="margin-top:.75rem;font-size:.78rem;color:var(--muted)">
-          🎯 When this hits zero, your monthly surplus jumps by <strong style="color:var(--green)">₹38,000</strong> overnight.
-        </div>
+        <div style="margin-top:.65rem;font-size:.76rem;color:var(--muted)">🎯 When this hits zero, your surplus jumps by <strong style="color:var(--green)">₹38,000</strong> overnight.</div>
       </div>
 
-      <!-- Alerts -->
-      <div id="alerts-container" class="gap"></div>
+      <!-- Spend alerts -->
+      <div id="alerts-container"></div>
 
       <div class="row-pair">
-        <!-- Emergency Fund -->
+        <!-- Emergency fund -->
         <div class="card">
           <div class="section-title">Emergency Fund</div>
-          <div class="ef-grid">
-            <div class="ef-card">
-              <div class="ef-label">💧 Liquid</div>
-              <div class="ef-value green" id="ov-ef-liquid">—</div>
-              <div class="ef-sub">accessible now</div>
-            </div>
-            <div class="ef-card">
-              <div class="ef-label">🔒 Locked</div>
-              <div class="ef-value accent" id="ov-ef-locked">—</div>
-              <div class="ef-sub">FD / long-term</div>
-            </div>
+          <div class="ef-grid" style="grid-template-columns:1fr">
+            <div class="ef-card"><div class="ef-label">💧 Liquid Emergency Fund only</div><div class="ef-value green" id="ov-ef-liquid">—</div><div class="ef-sub">cash you can access in a crisis</div></div>
           </div>
-          <div class="ef-label">Total vs Target</div>
-          <div style="display:flex;justify-content:space-between;font-size:.8rem;margin:.3rem 0">
-            <span id="ov-ef-total-label">—</span><span id="ov-ef-target-label">—</span>
-          </div>
-          <div class="progress-wrap">
-            <div class="progress-fill fill-green" id="ov-ef-bar" style="width:0%"></div>
-          </div>
-          <div style="font-size:.72rem;color:var(--muted);margin-top:.4rem" id="ov-ef-pct">—% of target</div>
+          <div style="display:flex;justify-content:space-between;font-size:.78rem;margin:.25rem 0"><span id="ov-ef-total-label">—</span><span id="ov-ef-target-label">target: —</span></div>
+          <div class="progress-wrap"><div class="progress-fill fill-green" id="ov-ef-bar" style="width:0%"></div></div>
+          <div style="font-size:.7rem;color:var(--muted);margin-top:.35rem" id="ov-ef-pct">—% of target</div>
+          <div style="font-size:.7rem;color:var(--muted);margin-top:.3rem">🔒 Locked savings (NPS/PPF etc.) tracked separately in Savings tab.</div>
         </div>
 
-        <!-- Category spend alerts -->
+        <!-- Item spend this month -->
         <div class="card">
-          <div class="section-title">Category Spend This Month</div>
-          <div id="category-spend-overview">—</div>
+          <div class="section-title">Item Spend This Month</div>
+          <div id="item-spend-overview" style="max-height:220px;overflow-y:auto;">—</div>
         </div>
       </div>
 
-      <!-- Buy list next unlock -->
+      <!-- Pinned from Buy List -->
       <div class="card">
-        <div class="section-title">Buy List — Next Unlocks</div>
-        <div id="ov-buy-preview">—</div>
+        <div class="section-title">📌 Pinned from Buy List</div>
+        <div id="ov-pinned">
+          <div style="font-size:.82rem;color:var(--muted)">Pin items from the Buy List tab to show them here. ☝️</div>
+        </div>
       </div>
     </div>
 
@@ -339,35 +246,37 @@
     <div id="tab-money" class="tab">
       <div class="page-header">
         <div class="page-title">Income & <span>Expenses</span></div>
-        <div class="page-sub">Edit any number — syncs automatically.</div>
+        <div class="page-sub">Edit any number — auto-saves after 2 seconds.</div>
       </div>
 
-      <!-- Income -->
+      <!-- Primary income -->
       <div class="card gap">
         <div class="section-title">Primary Income</div>
         <table>
-          <tr><th>Source</th><th>Amount (₹)</th></tr>
-          <tr>
-            <td>Your net monthly income</td>
-            <td><input class="edit-input" id="inc-self" type="number" oninput="recalc()" placeholder="0"></td>
-          </tr>
-          <tr>
-            <td>Wife's net monthly income</td>
-            <td><input class="edit-input" id="inc-wife" type="number" oninput="recalc()" placeholder="0"></td>
-          </tr>
+          <tr><th>Person</th><th>Net Monthly (₹)</th></tr>
+          <tr><td>Abhishek</td><td><input class="edit-input" id="inc-self" type="number" onchange="recalc()" placeholder="0"></td></tr>
+          <tr><td>Garima</td><td><input class="edit-input" id="inc-wife" type="number" onchange="recalc()" placeholder="0"></td></tr>
         </table>
-        <div style="margin-top:.75rem;font-size:.82rem;color:var(--muted)">
-          Total income: <strong id="money-total-income" style="color:var(--text)">—</strong>
-        </div>
+      </div>
+
+      <!-- Additional income -->
+      <div class="card gap">
+        <div class="section-title">Additional Income</div>
+        <table>
+          <thead><tr><th>Source</th><th>Amount (₹)</th><th></th></tr></thead>
+          <tbody id="additional-income-body"></tbody>
+        </table>
+        <button class="add-btn" onclick="addAdditionalIncome()">+ Add income source</button>
+        <div style="margin-top:.65rem;font-size:.8rem;color:var(--muted)">Additional total: <strong id="additional-total" style="color:var(--text)">₹0</strong></div>
       </div>
 
       <!-- Savings target -->
       <div class="card gap">
         <div class="section-title">Savings Target</div>
-        <div style="display:flex;align-items:center;gap:1rem">
-          <label class="inline-label" style="margin:0;min-width:160px">Target savings rate (%)</label>
-          <input class="big-input" id="target-rate" type="number" min="0" max="100" oninput="recalc()" style="max-width:120px" placeholder="30">
-          <span style="font-size:.82rem;color:var(--muted)">Current: <strong id="money-curr-rate">—</strong></span>
+        <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
+          <div><label class="inline-label">Target savings rate (%)</label>
+          <input class="big-input" id="target-rate" type="number" min="0" max="100" onchange="recalc()" placeholder="30" style="max-width:120px"></div>
+          <div style="font-size:.82rem;color:var(--muted);padding-top:1.2rem">Current: <strong id="money-curr-rate">—</strong></div>
         </div>
       </div>
 
@@ -379,52 +288,40 @@
           <tbody id="expenses-body"></tbody>
         </table>
         <button class="add-btn" onclick="addExpenseRow()">+ Add expense</button>
-        <div style="margin-top:.75rem;font-size:.82rem;color:var(--muted)">
-          Total expenses: <strong id="money-total-expenses" style="color:var(--text)">—</strong>
+        <div style="margin-top:.7rem;font-size:.82rem;color:var(--muted)">
+          Total: <strong id="money-total-expenses" style="color:var(--text)">—</strong>
+          &nbsp;|&nbsp; Income: <strong id="money-total-income" style="color:var(--text)">—</strong>
           &nbsp;|&nbsp; Surplus: <strong id="money-surplus" style="color:var(--green)">—</strong>
         </div>
       </div>
     </div>
 
-    <!-- ══ WEEKLY TRACKER ══ -->
+    <!-- ══ WEEKLY / SUNDAY CHECK-IN ══ -->
     <div id="tab-weekly" class="tab">
       <div class="page-header">
         <div class="page-title">Sunday <span>Check-in</span></div>
-        <div class="page-sub">Tap every Sunday. Add what you spent. See what's left.</div>
+        <div class="page-sub">Tap every Sunday. Add what you spent per item. See what's left.</div>
       </div>
-
-      <div id="weekly-cards"></div>
+      <!-- Static table — NO re-render on input, cursor stays put -->
+      <div id="weekly-container"></div>
     </div>
 
     <!-- ══ BUY LIST ══ -->
     <div id="tab-buylist" class="tab">
       <div class="page-header">
         <div class="page-title">Buy <span>List</span></div>
-        <div class="page-sub">Items unlock as your Emergency Fund grows. Foundation first, treats second. 😄</div>
+        <div class="page-sub">Items unlock as your Emergency Fund grows. Pin ⭐ items to show on the Overview.</div>
       </div>
 
       <div class="card-grid" style="grid-template-columns:repeat(3,1fr)">
-        <div class="card">
-          <div class="card-label">Total List Value</div>
-          <div class="card-value" id="bl-total">—</div>
-        </div>
-        <div class="card">
-          <div class="card-label">Bought So Far</div>
-          <div class="card-value green" id="bl-bought">—</div>
-        </div>
-        <div class="card">
-          <div class="card-label">Remaining</div>
-          <div class="card-value accent" id="bl-remaining">—</div>
-        </div>
+        <div class="card"><div class="card-label">Total List Value</div><div class="card-value" id="bl-total">—</div></div>
+        <div class="card"><div class="card-label">Bought So Far</div><div class="card-value green" id="bl-bought">—</div></div>
+        <div class="card"><div class="card-label">Remaining</div><div class="card-value accent" id="bl-remaining">—</div></div>
       </div>
 
       <div class="card gap">
-        <div class="section-title">Emergency Fund: <span id="bl-ef-pct-label" style="color:var(--accent)">0%</span> reached</div>
-        <div class="progress-wrap" style="height:8px;margin-bottom:1rem">
-          <div class="progress-fill fill-green" id="bl-ef-bar" style="width:0%"></div>
-        </div>
         <table>
-          <thead><tr><th>✓</th><th>Item</th><th>Cost</th><th>Unlocks at</th><th>Status</th><th></th></tr></thead>
+          <thead><tr><th>✅ Bought</th><th>🎯 Next</th><th>Item</th><th>Cost (₹)</th><th>Priority</th><th>Remarks / When to buy</th><th>📌 Pin</th><th></th></tr></thead>
           <tbody id="buylist-body"></tbody>
         </table>
         <button class="add-btn" onclick="addBuyItem()">+ Add item</button>
@@ -435,72 +332,53 @@
     <div id="tab-savings" class="tab">
       <div class="page-header">
         <div class="page-title">Savings & <span>Emergency Fund</span></div>
-        <div class="page-sub">Target: 1.5× monthly expenses. Split into liquid and locked.</div>
+        <div class="page-sub">Target: 1.5× monthly expenses (18 months). Liquid + Locked split.</div>
       </div>
 
-      <div class="ef-grid gap" style="grid-template-columns:1fr 1fr 1fr">
-        <div class="card">
-          <div class="card-label">💧 Liquid Fund</div>
-          <div class="card-value green" id="sav-liquid">—</div>
-          <div class="card-sub">accessible now</div>
-        </div>
-        <div class="card">
-          <div class="card-label">🔒 Locked</div>
-          <div class="card-value accent" id="sav-locked">—</div>
-          <div class="card-sub">FD / NPS / PPF</div>
-        </div>
-        <div class="card">
-          <div class="card-label">🎯 Target (1.5×)</div>
-          <div class="card-value" id="sav-target">—</div>
-          <div class="card-sub" id="sav-target-sub">1.5× monthly expenses</div>
-        </div>
+      <div class="card-grid" style="grid-template-columns:repeat(3,1fr)">
+        <div class="card"><div class="card-label">💧 Emergency Fund</div><div class="card-value green" id="sav-liquid">—</div><div class="card-sub">liquid only — target 1.5×</div></div>
+        <div class="card"><div class="card-label">🎯 EF Target (1.5×)</div><div class="card-value" id="sav-target">—</div><div class="card-sub">18 months of expenses</div></div>
+        <div class="card"><div class="card-label">💼 Total Wealth (Locked)</div><div class="card-value accent" id="sav-locked">—</div><div class="card-sub">NPS / PPF / Stocks etc.</div></div>
       </div>
 
       <div class="card gap">
         <div class="section-title">Fund Progress</div>
-        <div style="margin-bottom:.5rem;font-size:.82rem">
-          Liquid: <strong id="sav-liq-label">—</strong> &nbsp;|&nbsp; Total: <strong id="sav-tot-label">—</strong> &nbsp;|&nbsp; Target: <strong id="sav-tgt-label">—</strong>
+        <div style="margin-bottom:.45rem;font-size:.8rem">Liquid (EF): <strong id="sav-liq-label">—</strong> &nbsp;|&nbsp; Target: <strong id="sav-tgt-label">—</strong></div>
+        <div class="progress-wrap" style="height:9px"><div class="progress-fill fill-green" id="sav-bar" style="width:0%"></div></div>
+        <div style="font-size:.7rem;color:var(--muted);margin-top:.35rem" id="sav-bar-pct">—% reached</div>
+        <div style="margin-top:1rem;display:flex;gap:1.5rem;flex-wrap:wrap">
+          <div><label class="inline-label">💧 Liquid savings (₹)</label><input class="big-input" id="sav-liquid-input" type="number" onchange="recalc()" placeholder="0" style="max-width:190px"></div>
+          <div><label class="inline-label">Monthly contribution (₹)</label><input class="big-input" id="sav-contribution" type="number" onchange="recalc()" placeholder="0" style="max-width:190px"></div>
         </div>
-        <div class="progress-wrap" style="height:10px"><div class="progress-fill fill-green" id="sav-bar" style="width:0%"></div></div>
-        <div style="font-size:.72rem;color:var(--muted);margin-top:.4rem" id="sav-bar-pct">—% of target reached</div>
-
-        <div style="margin-top:1.25rem">
-          <label class="inline-label">💧 Liquid savings (₹)</label>
-          <input class="big-input" id="sav-liquid-input" type="number" oninput="recalc()" placeholder="0" style="max-width:200px">
-        </div>
-        <div style="margin-top:.75rem">
-          <label class="inline-label">Monthly contribution to liquid fund (₹)</label>
-          <input class="big-input" id="sav-contribution" type="number" oninput="recalc()" placeholder="0" style="max-width:200px">
-        </div>
-        <div style="font-size:.82rem;color:var(--muted);margin-top:.6rem">
-          At this rate, liquid target reached in: <strong id="sav-months-to-target" style="color:var(--accent)">—</strong>
-        </div>
+        <div style="font-size:.8rem;color:var(--muted);margin-top:.55rem">Liquid target reached in: <strong id="sav-months-to-target" style="color:var(--accent)">—</strong></div>
       </div>
 
       <div class="card gap">
-        <div class="section-title">Locked / Long-term Savings</div>
+        <div class="section-title">💼 Wealth Builder (Locked Savings)</div>
+        <div style="font-size:.76rem;color:var(--muted);margin-bottom:.75rem">These are NOT emergency fund. They are long-term wealth. NPS, PPF, Stocks, Mutual Funds etc.</div>
         <table>
-          <thead><tr><th>Name</th><th>Type</th><th>Amount (₹)</th><th></th></tr></thead>
+          <thead><tr><th>Name</th><th>Amount (₹)</th><th></th></tr></thead>
           <tbody id="locked-body"></tbody>
         </table>
         <button class="add-btn" onclick="addLockedEntry()">+ Add entry</button>
-        <div style="margin-top:.75rem;font-size:.82rem;color:var(--muted)">
-          Total locked: <strong id="sav-locked-total" style="color:var(--accent)">—</strong>
-        </div>
+        <div style="margin-top:.65rem;font-size:.8rem;color:var(--muted)">Total locked: <strong id="sav-locked-total" style="color:var(--accent)">—</strong></div>
       </div>
 
       <!-- Debt settings -->
       <div class="card">
-        <div class="section-title">⚙️ Debt Freedom Counter Settings</div>
-        <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-top:.25rem">
-          <div>
-            <label class="inline-label">Months remaining on loan</label>
-            <input class="big-input" id="debt-months-input" type="number" oninput="recalc()" placeholder="e.g. 156" style="max-width:160px">
-          </div>
-          <div>
-            <label class="inline-label">Total loan tenure (months)</label>
-            <input class="big-input" id="debt-tenure-input" type="number" oninput="recalc()" placeholder="e.g. 180" style="max-width:160px">
-          </div>
+        <div class="section-title">⚙️ Debt Freedom Counter</div>
+        <div style="font-size:.76rem;color:var(--muted);margin-bottom:.9rem">Enter your EMI and current outstanding. Months remaining and freedom date are calculated automatically.</div>
+        <div style="display:flex;gap:1rem;flex-wrap:wrap">
+          <div><label class="inline-label">Monthly EMI (₹)</label><input class="big-input" id="debt-emi" type="number" onchange="recalcDebt()" placeholder="e.g. 38000" style="max-width:160px"></div>
+          <div><label class="inline-label">Outstanding loan amount (₹)</label><input class="big-input" id="debt-outstanding" type="number" onchange="recalcDebt()" placeholder="e.g. 28,00,000" style="max-width:190px"></div>
+          <div><label class="inline-label">Original loan amount (₹)</label><input class="big-input" id="debt-original" type="number" onchange="recalcDebt()" placeholder="e.g. 38,10,000" style="max-width:190px"></div>
+        </div>
+        <div style="margin-top:.9rem;background:var(--card2);border-radius:8px;padding:.75rem 1rem;font-size:.82rem">
+          <span style="color:var(--muted)">Months remaining: </span><strong id="debt-calc-months" style="color:var(--accent)">—</strong>
+          &nbsp;&nbsp;|&nbsp;&nbsp;
+          <span style="color:var(--muted)">Freedom date: </span><strong id="debt-calc-date" style="color:var(--green)">—</strong>
+          &nbsp;&nbsp;|&nbsp;&nbsp;
+          <span style="color:var(--muted)">Paid off: </span><strong id="debt-calc-pct" style="color:var(--text)">—</strong>
         </div>
       </div>
     </div>
@@ -524,13 +402,76 @@
       </div>
       <div class="flex-row">
         <div class="card">
-          <div class="section-title">Category Spending (FY)</div>
-          <div id="fy-cats">—</div>
+          <div class="section-title">Item-wise Spending (FY)</div>
+          <div id="fy-items">—</div>
         </div>
         <div class="card">
           <div class="section-title">Key Insights</div>
-          <div id="fy-insights" style="font-size:.83rem;line-height:1.7;color:var(--muted)">Calculating…</div>
+          <div id="fy-insights" style="font-size:.81rem;line-height:1.8;color:var(--muted)">Calculating…</div>
         </div>
+      </div>
+    </div>
+
+    <!-- ══ OWED TO ME ══ -->
+    <div id="tab-owed" class="tab">
+      <div class="page-header">
+        <div class="page-title">💸 Owed <span>to Me</span></div>
+        <div class="page-sub">Salary dues, reimbursements, pending credits. Your money — go get it.</div>
+      </div>
+
+      <!-- KPI strip -->
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-label">Total Pending</div>
+          <div class="card-value red" id="owed-total">—</div>
+          <div class="card-sub">across all entries</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Recovered So Far</div>
+          <div class="card-value green" id="owed-recovered">—</div>
+          <div class="card-sub">marked as received</div>
+        </div>
+        <div class="card">
+          <div class="card-label">If Recovered → Surplus</div>
+          <div class="card-value accent" id="owed-new-surplus">—</div>
+          <div class="card-sub" id="owed-surplus-delta">vs current —</div>
+        </div>
+        <div class="card">
+          <div class="card-label">EF Impact</div>
+          <div class="card-value" id="owed-ef-impact">—</div>
+          <div class="card-sub" id="owed-ef-sub">months of EF covered</div>
+        </div>
+      </div>
+
+      <!-- Motivation banner -->
+      <div id="owed-motivation" class="debt-card gap"></div>
+
+      <!-- Entries table -->
+      <div class="card gap">
+        <div class="section-title">Pending Entries</div>
+        <table>
+          <thead>
+            <tr>
+              <th>✅</th>
+              <th>Description</th>
+              <th>Type</th>
+              <th>Amount (₹)</th>
+              <th>Since / Due</th>
+              <th>Notes</th>
+              <th>Buy List item it covers</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="owed-body"></tbody>
+        </table>
+        <button class="add-btn" onclick="addOwedEntry()">+ Add entry</button>
+      </div>
+
+      <!-- Buy list unlock preview -->
+      <div class="card">
+        <div class="section-title">🛒 What This Money Buys You</div>
+        <div style="font-size:.76rem;color:var(--muted);margin-bottom:.9rem">If you recovered all pending dues right now, here's what you could buy from your list.</div>
+        <div id="owed-buylist-preview">—</div>
       </div>
     </div>
 
@@ -542,545 +483,725 @@
   <div class="mobile-nav-inner">
     <div class="mnav-item active" onclick="switchTab('overview')"><div class="mnav-icon">◉</div>Home</div>
     <div class="mnav-item" onclick="switchTab('money')"><div class="mnav-icon">₹</div>Money</div>
-    <div class="mnav-item" onclick="switchTab('weekly')"><div class="mnav-icon">📅</div>Weekly</div>
+    <div class="mnav-item" onclick="switchTab('weekly')"><div class="mnav-icon">📅</div>Sunday</div>
     <div class="mnav-item" onclick="switchTab('buylist')"><div class="mnav-icon">◎</div>Buys</div>
     <div class="mnav-item" onclick="switchTab('savings')"><div class="mnav-icon">◈</div>Savings</div>
     <div class="mnav-item" onclick="switchTab('fy')"><div class="mnav-icon">📊</div>FY</div>
+    <div class="mnav-item" onclick="switchTab('owed')"><div class="mnav-icon">💸</div>Owed</div>
   </div>
 </nav>
 
 <script>
-// ══════════════════════════════════════════
-//  CONFIG
-// ══════════════════════════════════════════
+// ══ CONFIG ══
 const BIN_ID  = '69db8d30aaba882197ee754c';
 const API_KEY = '$2a$10$XmC1OBk7Fp2wYABWWCoFjOz0nTZ.EzXsWqkn9i3/7pfFhy/aAc5lG';
 const BASE    = 'https://api.jsonbin.io/v3/b';
 
-// ── Indian number formatter ──
+// ══ INDIAN NUMBER FORMAT ══
 function inr(n) {
-  if (n === null || n === undefined || isNaN(n)) return '—';
+  if (n===null||n===undefined||isNaN(n)) return '—';
+  const neg = n < 0;
   const num = Math.abs(Math.round(n));
-  const s = num.toString();
-  let result = '';
-  if (s.length <= 3) {
-    result = s;
-  } else {
+  const s   = String(num);
+  let res   = '';
+  if (s.length <= 3) { res = s; }
+  else {
     const last3 = s.slice(-3);
-    const rest  = s.slice(0, -3);
-    const groups = [];
-    for (let i = rest.length; i > 0; i -= 2) groups.unshift(rest.slice(Math.max(0, i-2), i));
-    result = groups.join(',') + ',' + last3;
+    const rest  = s.slice(0,-3);
+    const parts = [];
+    for (let i = rest.length; i > 0; i -= 2) parts.unshift(rest.slice(Math.max(0,i-2),i));
+    res = parts.join(',') + ',' + last3;
   }
-  return (n < 0 ? '-' : '') + '₹' + result;
+  return (neg?'-':'') + '₹' + res;
 }
 
-// ──────────────────────────────────────────
-//  DATA MODEL
-// ──────────────────────────────────────────
+// ══ DATA ══
 let data = {
-  incomeSelf: 220000,
-  incomeWife: 50000,
-  targetRate: 30,
-  expenses: [
-    {category:'Housing',   item:'Rent',              amount:36000},
-    {category:'Housing',   item:'Maid',              amount:10000},
-    {category:'Housing',   item:'Electricity',       amount:4000},
-    {category:'Housing',   item:'Gas',               amount:500},
-    {category:'Food',      item:'Ration – Staple',   amount:5000},
-    {category:'Food',      item:'Ration – Fresh',    amount:8000},
-    {category:'Food',      item:'Eating Out',        amount:10000},
-    {category:'Health',    item:'Supplements',       amount:10000},
-    {category:'Health',    item:'Gym',               amount:10000},
-    {category:'Utilities', item:'Mobile',            amount:500},
-    {category:'Utilities', item:'Internet',          amount:1500},
-    {category:'Utilities', item:'Water',             amount:500},
-    {category:'Utilities', item:'Laundry',           amount:500},
-    {category:'Loans',     item:'Education Loan EMI',amount:38000},
-    {category:'Subscriptions',item:'AI Tools',       amount:5000},
-    {category:'Subscriptions',item:'Netflix',        amount:700},
-    {category:'Subscriptions',item:'Headspace',      amount:129},
-    {category:'Subscriptions',item:'iCloud',         amount:219},
-    {category:'Subscriptions',item:'OneDrive',       amount:820},
+  incomeSelf:220000, incomeWife:50000, targetRate:30,
+  additionalIncome: [],
+  expenses:[
+    {category:'Housing',      item:'Rent',              amount:36000},
+    {category:'Housing',      item:'Maid',              amount:10000},
+    {category:'Housing',      item:'Electricity',       amount:4000},
+    {category:'Housing',      item:'Gas',               amount:500},
+    {category:'Food',         item:'Ration – Staple',   amount:5000},
+    {category:'Food',         item:'Ration – Fresh',    amount:8000},
+    {category:'Food',         item:'Eating Out',        amount:10000},
+    {category:'Health',       item:'Supplements',       amount:10000},
+    {category:'Health',       item:'Gym',               amount:10000},
+    {category:'Utilities',    item:'Mobile',            amount:500},
+    {category:'Utilities',    item:'Internet',          amount:1500},
+    {category:'Utilities',    item:'Water',             amount:500},
+    {category:'Utilities',    item:'Laundry',           amount:500},
+    {category:'Loans',        item:'Education Loan EMI',amount:38000},
+    {category:'Subscriptions',item:'AI Tools',          amount:5000},
+    {category:'Subscriptions',item:'Netflix',           amount:700},
+    {category:'Subscriptions',item:'Headspace',         amount:129},
+    {category:'Subscriptions',item:'iCloud',            amount:219},
+    {category:'Subscriptions',item:'OneDrive',          amount:820},
   ],
-  // weeklySpend: { 'Eating Out': [w1, w2, w3, w4], ... }
-  weeklySpend: {},
-  buyList: [
-    {item:'Shoe stand',              category:'Home',    cost:2000,    unlockPct:10,  bought:false},
-    {item:'Charger adapter',         category:'Home',    cost:500,     unlockPct:10,  bought:false},
-    {item:'Clothes',                 category:'Home',    cost:10000,   unlockPct:20,  bought:false},
-    {item:'Specs',                   category:'Leisure', cost:5000,    unlockPct:20,  bought:false},
-    {item:'Workstation table',       category:'Work',    cost:10000,   unlockPct:30,  bought:false},
-    {item:'Workstation monitor',     category:'Work',    cost:10000,   unlockPct:30,  bought:false},
-    {item:'Watches',                 category:'Home',    cost:5000,    unlockPct:30,  bought:false},
-    {item:'Trips',                   category:'Leisure', cost:10000,   unlockPct:35,  bought:false},
-    {item:'Gifts for relationships', category:'Leisure', cost:15000,   unlockPct:35,  bought:false},
-    {item:'TV Cabinet',              category:'Leisure', cost:5000,    unlockPct:40,  bought:false},
-    {item:'Curtains',                category:'Home',    cost:10000,   unlockPct:40,  bought:false},
-    {item:'Office bag',              category:'Work',    cost:5000,    unlockPct:40,  bought:false},
-    {item:'Health expenses SOS',     category:'Health',  cost:15000,   unlockPct:50,  bought:false},
-    {item:'Air purifier',            category:'Home',    cost:50000,   unlockPct:50,  bought:false},
-    {item:'Sofa',                    category:'Work',    cost:50000,   unlockPct:60,  bought:false},
-    {item:'TV (biggest size)',       category:'Leisure', cost:60000,   unlockPct:70,  bought:false},
-    {item:'Phone',                   category:'Tech',    cost:100000,  unlockPct:75,  bought:false},
-    {item:'CAR',                     category:'Vehicle', cost:1500000, unlockPct:100, bought:false},
+  weeklySpend:{},   // { 'Eating Out': [w1,w2,w3,w4], ... }
+  buyList:[
+    {item:'Shoe stand',              cost:2000,    priority:'P3', nextToBuy:false, bought:false, pinned:false, remarks:''},
+    {item:'Charger adapter',         cost:500,     priority:'P3', nextToBuy:false, bought:false, pinned:false, remarks:''},
+    {item:'Clothes',                 cost:10000,   priority:'P2', nextToBuy:false, bought:false, pinned:false, remarks:''},
+    {item:'Specs',                   cost:5000,    priority:'P2', nextToBuy:false, bought:false, pinned:false, remarks:''},
+    {item:'Workstation table',       cost:10000,   priority:'P2', nextToBuy:false, bought:false, pinned:false, remarks:''},
+    {item:'Workstation monitor',     cost:10000,   priority:'P2', nextToBuy:false, bought:false, pinned:false, remarks:''},
+    {item:'Watches',                 cost:5000,    priority:'P3', nextToBuy:false, bought:false, pinned:false, remarks:''},
+    {item:'Trips',                   cost:10000,   priority:'P2', nextToBuy:false, bought:false, pinned:false, remarks:''},
+    {item:'Gifts for relationships', cost:15000,   priority:'P2', nextToBuy:false, bought:false, pinned:false, remarks:''},
+    {item:'TV Cabinet',              cost:5000,    priority:'P3', nextToBuy:false, bought:false, pinned:false, remarks:''},
+    {item:'Curtains',                cost:10000,   priority:'P2', nextToBuy:false, bought:false, pinned:false, remarks:''},
+    {item:'Office bag',              cost:5000,    priority:'P2', nextToBuy:false, bought:false, pinned:false, remarks:''},
+    {item:'Health expenses SOS',     cost:15000,   priority:'P1', nextToBuy:false, bought:false, pinned:false, remarks:''},
+    {item:'Air purifier',            cost:50000,   priority:'P1', nextToBuy:false, bought:false, pinned:false, remarks:''},
+    {item:'Sofa',                    cost:50000,   priority:'P2', nextToBuy:false, bought:false, pinned:false, remarks:''},
+    {item:'TV (biggest size)',       cost:60000,   priority:'P3', nextToBuy:false, bought:false, pinned:false, remarks:''},
+    {item:'Phone',                   cost:100000,  priority:'P2', nextToBuy:false, bought:false, pinned:false, remarks:''},
+    {item:'CAR',                     cost:1500000, priority:'P1', nextToBuy:false, bought:false, pinned:true,  remarks:'The final boss 😄'},
   ],
-  liquidSavings: 0,
-  monthlyContribution: 0,
-  lockedSavings: [
-    {name:'NPS',          type:'Locked', amount:0},
-    {name:'PPF',          type:'Locked', amount:0},
-    {name:'Stocks',       type:'Locked', amount:0},
-    {name:'Mutual Funds', type:'Locked', amount:0},
+  liquidSavings:0, monthlyContribution:0,
+  lockedSavings:[
+    {name:'NPS',amount:0},{name:'PPF',amount:0},{name:'Stocks',amount:0},{name:'Mutual Funds',amount:0}
   ],
-  debtMonthsLeft:  156,
-  debtTotalMonths: 180,
+  debtEmi:0, debtOutstanding:0, debtOriginal:0,
+  owedEntries:[
+    {desc:'Pending reimbursement',  type:'Reimbursement', amount:0, since:'', notes:'', buyLink:'', received:false},
+  ],
 };
 
-// ──────────────────────────────────────────
-//  JSONBIN
-// ──────────────────────────────────────────
+// ══ JSONBIN ══
 async function loadData() {
   try {
-    const r = await fetch(`${BASE}/${BIN_ID}/latest`, {headers:{'X-Master-Key':API_KEY}});
+    const r = await fetch(`${BASE}/${BIN_ID}/latest`,{headers:{'X-Master-Key':API_KEY}});
     const j = await r.json();
     if (j.record) {
-      data = {...data, ...j.record};
-      syncToDOM();
+      // deep merge — preserve defaults for missing keys
+      data = Object.assign({}, data, j.record);
+      if (!data.additionalIncome) data.additionalIncome = [];
+      populateStaticInputs();
+      buildWeeklyTable();
+      renderExpenses();
+      renderBuyList();
+      renderLocked();
+      renderAdditionalIncome();
+      renderOwed();
       recalc();
       document.getElementById('sync-status').textContent = '✓ loaded';
     }
-  } catch(e) {
-    document.getElementById('sync-status').textContent = '⚠ offline';
-  }
+  } catch(e) { document.getElementById('sync-status').textContent = '⚠ offline'; }
 }
 
 async function saveData() {
-  syncFromDOM();
+  harvestAll();
   document.getElementById('sync-status').textContent = 'saving…';
   try {
-    await fetch(`${BASE}/${BIN_ID}`, {
+    await fetch(`${BASE}/${BIN_ID}`,{
       method:'PUT',
       headers:{'Content-Type':'application/json','X-Master-Key':API_KEY},
-      body: JSON.stringify(data)
+      body:JSON.stringify(data)
     });
     document.getElementById('sync-status').textContent = '✓ saved';
     document.getElementById('last-sync').textContent = 'Last sync: ' + new Date().toLocaleTimeString('en-IN');
-  } catch(e) {
-    document.getElementById('sync-status').textContent = '⚠ save failed';
-  }
+  } catch(e) { document.getElementById('sync-status').textContent = '⚠ failed'; }
 }
 
-// ──────────────────────────────────────────
-//  DOM → DATA
-// ──────────────────────────────────────────
-function syncFromDOM() {
-  data.incomeSelf         = +document.getElementById('inc-self').value || 0;
-  data.incomeWife         = +document.getElementById('inc-wife').value || 0;
-  data.targetRate         = +document.getElementById('target-rate').value || 30;
-  data.liquidSavings      = +document.getElementById('sav-liquid-input').value || 0;
-  data.monthlyContribution= +document.getElementById('sav-contribution').value || 0;
-  data.debtMonthsLeft     = +document.getElementById('debt-months-input').value || 0;
-  data.debtTotalMonths    = +document.getElementById('debt-tenure-input').value || 180;
+// ══ HARVEST ALL INPUTS (no re-render = no cursor jump) ══
+function harvestAll() {
+  data.incomeSelf          = +v('inc-self')   || 0;
+  data.incomeWife          = +v('inc-wife')   || 0;
+  data.targetRate          = +v('target-rate')|| 30;
+  data.liquidSavings       = +v('sav-liquid-input') || 0;
+  data.monthlyContribution = +v('sav-contribution') || 0;
+  data.debtEmi             = +v('debt-emi')         || 0;
+  data.debtOutstanding     = +v('debt-outstanding') || 0;
+  data.debtOriginal        = +v('debt-original')    || 0;
 
-  // expenses
+  // expenses — read from existing inputs, no re-render
   data.expenses = [];
   document.querySelectorAll('#expenses-body tr').forEach(tr => {
-    const inputs = tr.querySelectorAll('input');
-    if (inputs.length >= 3) {
-      data.expenses.push({
-        category: inputs[0].value,
-        item:     inputs[1].value,
-        amount:   +inputs[2].value || 0,
-      });
-    }
+    const ins = tr.querySelectorAll('input');
+    if (ins.length >= 3) data.expenses.push({category:ins[0].value, item:ins[1].value, amount:+ins[2].value||0});
   });
 
-  // weekly spend
-  data.weeklySpend = {};
-  document.querySelectorAll('.week-row-input').forEach(inp => {
-    const cat  = inp.dataset.cat;
-    const week = +inp.dataset.week;
-    if (!data.weeklySpend[cat]) data.weeklySpend[cat] = [0,0,0,0];
-    data.weeklySpend[cat][week] = +inp.value || 0;
+  // additional income
+  data.additionalIncome = [];
+  document.querySelectorAll('#additional-income-body tr').forEach(tr => {
+    const ins = tr.querySelectorAll('input');
+    if (ins.length >= 2) data.additionalIncome.push({source:ins[0].value, amount:+ins[1].value||0});
   });
 
-  // buy list
+  // weekly — read from existing inputs
+  document.querySelectorAll('.week-inp').forEach(inp => {
+    const item = inp.dataset.item;
+    const w    = +inp.dataset.w;
+    if (!data.weeklySpend[item]) data.weeklySpend[item] = [0,0,0,0];
+    data.weeklySpend[item][w] = +inp.value||0;
+  });
+
+  // buy list — read from existing inputs
   data.buyList = [];
   document.querySelectorAll('#buylist-body tr').forEach(tr => {
-    const inputs = tr.querySelectorAll('input[type=text], input[type=number]');
-    const chk    = tr.querySelector('input[type=checkbox]');
-    if (inputs.length >= 3) {
-      data.buyList.push({
-        item:       inputs[0].value,
-        category:   inputs[1].value,
-        cost:       +inputs[2].value || 0,
-        unlockPct:  +inputs[3].value || 50,
-        bought:     chk ? chk.checked : false,
-      });
-    }
+    const chk     = tr.querySelector('.bl-done');
+    const nextChk = tr.querySelector('.bl-next');
+    const pinChk  = tr.querySelector('.bl-pin');
+    const itemInp = tr.querySelector('.bl-item');
+    const costInp = tr.querySelector('.bl-cost');
+    const priSel  = tr.querySelector('.bl-pri');
+    const remInp  = tr.querySelector('.bl-rem');
+    if (itemInp) data.buyList.push({
+      item:      itemInp.value,
+      cost:      +costInp.value||0,
+      priority:  priSel?.value||'',
+      nextToBuy: nextChk?.checked||false,
+      bought:    chk?.checked||false,
+      pinned:    pinChk?.checked||false,
+      remarks:   remInp?.value||'',
+    });
   });
 
-  // locked
+  // locked savings
   data.lockedSavings = [];
   document.querySelectorAll('#locked-body tr').forEach(tr => {
-    const inputs = tr.querySelectorAll('input');
-    if (inputs.length >= 2) {
-      data.lockedSavings.push({
-        name:   inputs[0].value,
-        type:   'Locked',
-        amount: +inputs[1].value || 0,
-      });
-    }
+    const ins = tr.querySelectorAll('input');
+    if (ins.length >= 2) data.lockedSavings.push({name:ins[0].value, amount:+ins[1].value||0});
+  });
+
+  // owed entries
+  data.owedEntries = [];
+  document.querySelectorAll('#owed-body tr').forEach(tr => {
+    const chk   = tr.querySelector('.ow-recv');
+    const desc  = tr.querySelector('.ow-desc');
+    const type  = tr.querySelector('.ow-type');
+    const amt   = tr.querySelector('.ow-amt');
+    const since = tr.querySelector('.ow-since');
+    const notes = tr.querySelector('.ow-notes');
+    const buyLk = tr.querySelector('.ow-buy');
+    if (desc) data.owedEntries.push({
+      desc:     desc.value,
+      type:     type?.value||'',
+      amount:   +amt?.value||0,
+      since:    since?.value||'',
+      notes:    notes?.value||'',
+      buyLink:  buyLk?.value||'',
+      received: chk?.checked||false,
+    });
   });
 }
 
-// ──────────────────────────────────────────
-//  DATA → DOM
-// ──────────────────────────────────────────
-function syncToDOM() {
-  document.getElementById('inc-self').value    = data.incomeSelf;
-  document.getElementById('inc-wife').value    = data.incomeWife;
-  document.getElementById('target-rate').value = data.targetRate;
-  document.getElementById('sav-liquid-input').value    = data.liquidSavings;
-  document.getElementById('sav-contribution').value    = data.monthlyContribution;
-  document.getElementById('debt-months-input').value   = data.debtMonthsLeft;
-  document.getElementById('debt-tenure-input').value   = data.debtTotalMonths;
+function v(id) { return document.getElementById(id)?.value||''; }
 
-  renderExpenses();
-  renderWeekly();
-  renderBuyList();
-  renderLocked();
+// ══ POPULATE STATIC INPUTS (only on load) ══
+function populateStaticInputs() {
+  sid('inc-self',          data.incomeSelf);
+  sid('inc-wife',          data.incomeWife);
+  sid('target-rate',       data.targetRate);
+  sid('sav-liquid-input',  data.liquidSavings);
+  sid('sav-contribution',  data.monthlyContribution);
+  sid('debt-emi',          data.debtEmi);
+  sid('debt-outstanding',  data.debtOutstanding);
+  sid('debt-original',     data.debtOriginal);
 }
+function sid(id, val) { const el=document.getElementById(id); if(el) el.value=val; }
 
-// ──────────────────────────────────────────
-//  RENDER EXPENSES
-// ──────────────────────────────────────────
+// ══ RENDER EXPENSES ══
 function renderExpenses() {
-  const tbody = document.getElementById('expenses-body');
-  tbody.innerHTML = (data.expenses||[]).map((e,i) => `
-    <tr>
-      <td><input class="edit-input" value="${e.category||''}" oninput="recalc()" placeholder="Category"></td>
-      <td><input class="edit-input" value="${e.item||''}" oninput="recalc()" placeholder="Item"></td>
-      <td><input class="edit-input" type="number" value="${e.amount||0}" oninput="recalc()" style="max-width:110px"></td>
-      <td><button class="del-btn" onclick="delExpense(${i})">✕</button></td>
-    </tr>
-  `).join('');
+  document.getElementById('expenses-body').innerHTML =
+    (data.expenses||[]).map((e,i)=>`
+      <tr>
+        <td><input class="edit-input" value="${esc(e.category)}" onchange="recalc()" placeholder="Category"></td>
+        <td><input class="edit-input" value="${esc(e.item)}" onchange="recalc()" placeholder="Item"></td>
+        <td><input class="edit-input" type="number" value="${e.amount||0}" onchange="recalc()" style="max-width:110px"></td>
+        <td><button class="del-btn" onclick="delExpense(${i})">✕</button></td>
+      </tr>`).join('');
 }
-function addExpenseRow() {
-  data.expenses.push({category:'',item:'',amount:0});
-  renderExpenses(); recalc();
+function addExpenseRow() { data.expenses.push({category:'',item:'',amount:0}); renderExpenses(); }
+function delExpense(i)   { harvestAll(); data.expenses.splice(i,1); renderExpenses(); recalc(); }
+
+// ══ RENDER ADDITIONAL INCOME ══
+function renderAdditionalIncome() {
+  document.getElementById('additional-income-body').innerHTML =
+    (data.additionalIncome||[]).map((a,i)=>`
+      <tr>
+        <td><input class="edit-input" value="${esc(a.source)}" onchange="recalc()" placeholder="e.g. Freelance"></td>
+        <td><input class="edit-input" type="number" value="${a.amount||0}" onchange="recalc()" style="max-width:130px"></td>
+        <td><button class="del-btn" onclick="delAdditional(${i})">✕</button></td>
+      </tr>`).join('');
 }
-function delExpense(i) {
-  data.expenses.splice(i,1); renderExpenses(); recalc();
-}
+function addAdditionalIncome() { data.additionalIncome.push({source:'',amount:0}); renderAdditionalIncome(); }
+function delAdditional(i)      { harvestAll(); data.additionalIncome.splice(i,1); renderAdditionalIncome(); recalc(); }
 
-// ──────────────────────────────────────────
-//  RENDER WEEKLY TRACKER
-// ──────────────────────────────────────────
-function renderWeekly() {
-  const container = document.getElementById('weekly-cards');
-  // get unique categories
-  const cats = [...new Set((data.expenses||[]).map(e => e.category))];
-  container.innerHTML = cats.map(cat => {
-    const budget = (data.expenses||[]).filter(e=>e.category===cat).reduce((s,e)=>s+(e.amount||0),0);
-    if (!budget) return '';
-    const weeks = data.weeklySpend[cat] || [0,0,0,0];
-    const spent = weeks.reduce((a,b)=>a+b,0);
-    const pct   = Math.min(100, budget ? Math.round(spent/budget*100) : 0);
-    const remaining = budget - spent;
-    let fillClass = 'fill-green', alertClass='', alertMsg='';
-    if (pct >= 100)      { fillClass='fill-red';    alertClass='alert-over'; alertMsg='🚨 Over budget!'; }
-    else if (pct >= 90)  { fillClass='fill-orange'; alertClass='alert-90';  alertMsg='⚠️ 90% spent'; }
-    else if (pct >= 75)  { fillClass='fill-yellow'; alertClass='alert-75';  alertMsg='🟡 75% spent'; }
+// ══ BUILD WEEKLY TABLE (once; inputs persist — NO re-render on typing) ══
+function buildWeeklyTable() {
+  const container = document.getElementById('weekly-container');
+  const items = (data.expenses||[]).filter(e=>e.amount>0);
+  if (!items.length) { container.innerHTML='<p style="color:var(--muted);font-size:.82rem">Add expenses in the Money tab first.</p>'; return; }
 
-    const weekInputs = [0,1,2,3].map(w => `
-      <div class="week-entry">
-        <span class="week-tag">Week ${w+1}</span>
-        <input class="week-input week-row-input" type="number" data-cat="${cat}" data-week="${w}"
-          value="${weeks[w]||0}" oninput="recalc()" placeholder="₹0">
-        <span class="week-label">${w===0?'(this week)':''}</span>
-      </div>
-    `).join('');
-
+  container.innerHTML = items.map(e => {
+    const weeks = data.weeklySpend[e.item] || [0,0,0,0];
+    const key   = e.item.replace(/[^a-zA-Z0-9]/g,'_');
     return `
-    <div class="card gap">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem">
+    <div class="card gap" id="wcard-${key}">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem">
         <div>
-          <div class="section-title" style="margin:0">${cat}</div>
-          <div style="font-size:.8rem;color:var(--muted)">Budget: ${inr(budget)} &nbsp;|&nbsp; Spent: <strong style="color:var(--text)">${inr(spent)}</strong> &nbsp;|&nbsp; Left: <strong style="color:${remaining>=0?'var(--green)':'var(--red)'}">${inr(remaining)}</strong></div>
+          <div class="section-title" style="margin:0">${e.item}</div>
+          <div style="font-size:.76rem;color:var(--muted)">${e.category} &nbsp;·&nbsp; Budget: ${inr(e.amount)}</div>
         </div>
-        ${alertMsg ? `<span class="chip ${alertClass}" style="font-size:.72rem">${alertMsg}</span>` : ''}
+        <span class="chip" id="walert-${key}"></span>
       </div>
-      <div class="progress-wrap" style="margin-bottom:.75rem"><div class="progress-fill ${fillClass}" style="width:${pct}%"></div></div>
-      ${weekInputs}
+      <div style="display:flex;justify-content:space-between;font-size:.78rem;margin-bottom:.35rem">
+        <span>Spent: <strong id="wspent-${key}" style="color:var(--text)">₹0</strong></span>
+        <span>Left: <strong id="wleft-${key}" style="color:var(--green)">—</strong></span>
+      </div>
+      <div class="progress-wrap" style="margin-bottom:.75rem"><div class="progress-fill fill-green" id="wbar-${key}" style="width:0%"></div></div>
+      ${[0,1,2,3].map(w=>`
+        <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.4rem">
+          <span style="font-family:var(--mono);font-size:.7rem;color:var(--muted);min-width:55px">Week ${w+1}</span>
+          <input class="week-input week-inp"
+            data-item="${esc(e.item)}" data-w="${w}" data-key="${key}"
+            id="winp-${key}-${w}"
+            type="number" value="${weeks[w]||0}"
+            oninput="updateWeekRow('${key}','${esc(e.item)}',${e.amount})"
+            placeholder="₹0">
+        </div>`).join('')}
     </div>`;
   }).join('');
+
+  // init display
+  items.forEach(e => {
+    const key = e.item.replace(/[^a-zA-Z0-9]/g,'_');
+    updateWeekRow(key, e.item, e.amount);
+  });
 }
 
-// ──────────────────────────────────────────
-//  RENDER BUY LIST
-// ──────────────────────────────────────────
+// updates only the summary row + bar for one item — cursor never moves
+function updateWeekRow(key, itemName, budget) {
+  const weeks = [0,1,2,3].map(w => +document.getElementById(`winp-${key}-${w}`)?.value||0);
+  const spent = weeks.reduce((a,b)=>a+b,0);
+  const pct   = budget ? Math.min(100,Math.round(spent/budget*100)) : 0;
+  const left  = budget - spent;
+
+  const spentEl = document.getElementById(`wspent-${key}`);
+  const leftEl  = document.getElementById(`wleft-${key}`);
+  const barEl   = document.getElementById(`wbar-${key}`);
+  const alertEl = document.getElementById(`walert-${key}`);
+  if (spentEl) spentEl.textContent = inr(spent);
+  if (leftEl)  { leftEl.textContent = inr(left); leftEl.style.color = left>=0?'var(--green)':'var(--red)'; }
+  if (barEl)   {
+    barEl.style.width = pct+'%';
+    barEl.className   = 'progress-fill ' + (pct>=100?'fill-red':pct>=90?'fill-orange':pct>=75?'fill-yellow':'fill-green');
+  }
+  if (alertEl) {
+    if      (pct>=100) { alertEl.className='chip alert-over';  alertEl.textContent='🚨 Over!'; }
+    else if (pct>=90)  { alertEl.className='chip alert-90';    alertEl.textContent='⚠️ 90%'; }
+    else if (pct>=75)  { alertEl.className='chip alert-75';    alertEl.textContent='🟡 75%'; }
+    else               { alertEl.className='chip';             alertEl.textContent=''; }
+  }
+  // also sync to data.weeklySpend for save
+  data.weeklySpend[itemName] = weeks;
+}
+
+// ══ RENDER BUY LIST ══
 function renderBuyList() {
-  const tbody = document.getElementById('buylist-body');
-  tbody.innerHTML = (data.buyList||[]).map((b,i) => `
-    <tr style="${b.bought?'opacity:.45;text-decoration:line-through':''}">
-      <td><input type="checkbox" ${b.bought?'checked':''} onchange="toggleBought(${i})"></td>
-      <td><input class="edit-input" value="${b.item||''}" oninput="recalc()" placeholder="Item"></td>
-      <td><input class="edit-input" value="${b.category||''}" oninput="recalc()" placeholder="Category" style="max-width:90px"></td>
-      <td><input class="edit-input" type="number" value="${b.cost||0}" oninput="recalc()" style="max-width:100px"></td>
-      <td><input class="edit-input" type="number" value="${b.unlockPct||50}" min="0" max="100" oninput="recalc()" style="max-width:70px">%</td>
-      <td id="bl-status-${i}">—</td>
-      <td><button class="del-btn" onclick="delBuyItem(${i})">✕</button></td>
-    </tr>
-  `).join('');
+  document.getElementById('buylist-body').innerHTML =
+    (data.buyList||[]).map((b,i)=>{
+      const priClass = b.priority==='P1'?'pri-p1':b.priority==='P2'?'pri-p2':b.priority==='P3'?'pri-p3':'pri-none';
+      return `
+      <tr style="${b.bought?'opacity:.38;text-decoration:line-through':''}">
+        <td style="text-align:center"><input type="checkbox" class="bl-done" ${b.bought?'checked':''} onchange="toggleBought(${i})" title="Mark as bought"></td>
+        <td style="text-align:center"><input type="checkbox" class="bl-next" ${b.nextToBuy?'checked':''} onchange="toggleNext(${i})" title="Next to buy" style="accent-color:var(--green)"></td>
+        <td><input class="edit-input bl-item" value="${esc(b.item)}" onchange="recalc()" placeholder="Item name"></td>
+        <td><input class="edit-input bl-cost" type="number" value="${b.cost||0}" onchange="recalc()" style="max-width:110px"></td>
+        <td>
+          <select class="edit-input bl-pri" onchange="recalc()" style="cursor:pointer">
+            <option value="" ${!b.priority?'selected':''}>—</option>
+            <option value="P1" ${b.priority==='P1'?'selected':''}>P1 🔴</option>
+            <option value="P2" ${b.priority==='P2'?'selected':''}>P2 🟡</option>
+            <option value="P3" ${b.priority==='P3'?'selected':''}>P3 🔵</option>
+          </select>
+        </td>
+        <td><input class="edit-input bl-rem" value="${esc(b.remarks||'')}" placeholder="When / why…" style="min-width:160px"></td>
+        <td style="text-align:center"><input type="checkbox" class="bl-pin" ${b.pinned?'checked':''} onchange="togglePin(${i})" title="Pin to Overview" style="accent-color:var(--yellow)"> 📌</td>
+        <td><button class="del-btn" onclick="delBuyItem(${i})">✕</button></td>
+      </tr>`;
+    }).join('');
 }
-function toggleBought(i) { data.buyList[i].bought = !data.buyList[i].bought; renderBuyList(); recalc(); }
-function addBuyItem() { data.buyList.push({item:'',category:'',cost:0,unlockPct:50,bought:false}); renderBuyList(); recalc(); }
-function delBuyItem(i) { data.buyList.splice(i,1); renderBuyList(); recalc(); }
+function toggleBought(i) {
+  // harvest everything EXCEPT the checkbox we just clicked (its DOM state hasn't settled)
+  harvestAllExcept('bl-done', i);
+  data.buyList[i].bought = !data.buyList[i].bought;
+  renderBuyList(); recalc();
+}
+function toggleNext(i) {
+  harvestAllExcept('bl-next', i);
+  data.buyList[i].nextToBuy = !data.buyList[i].nextToBuy;
+  renderBuyList(); recalc();
+}
+function togglePin(i) {
+  harvestAllExcept('bl-pin', i);
+  data.buyList[i].pinned = !data.buyList[i].pinned;
+  renderBuyList(); recalc();
+}
+// Harvest buy list rows, skipping the checkbox at row i that was just clicked
+function harvestAllExcept(skipClass, skipIdx) {
+  harvestAll(); // harvest everything first
+  // then re-read the buy list carefully, restoring the correct pre-click value for the toggled item
+  // (harvestAll already read the checkbox's new state, so we just flip it back — toggle does the flip)
+  if (data.buyList[skipIdx]) {
+    if (skipClass==='bl-done')  data.buyList[skipIdx].bought    = !data.buyList[skipIdx].bought;
+    if (skipClass==='bl-next')  data.buyList[skipIdx].nextToBuy = !data.buyList[skipIdx].nextToBuy;
+    if (skipClass==='bl-pin')   data.buyList[skipIdx].pinned    = !data.buyList[skipIdx].pinned;
+  }
+}
+function addBuyItem()    { data.buyList.push({item:'',cost:0,priority:'',nextToBuy:false,bought:false,pinned:false,remarks:''}); renderBuyList(); recalc(); }
+function delBuyItem(i)   { harvestAll(); data.buyList.splice(i,1); renderBuyList(); recalc(); }
 
-// ──────────────────────────────────────────
-//  RENDER LOCKED
-// ──────────────────────────────────────────
+// ══ RENDER OWED ══
+function renderOwed() {
+  const buyItems = (data.buyList||[]).filter(b=>!b.bought).map(b=>b.item);
+  document.getElementById('owed-body').innerHTML =
+    (data.owedEntries||[]).map((o,i)=>`
+      <tr style="${o.received?'opacity:.4;text-decoration:line-through':''}">
+        <td style="text-align:center"><input type="checkbox" class="ow-recv" ${o.received?'checked':''} onchange="toggleOwed(${i})" title="Mark as received" style="accent-color:var(--green)"></td>
+        <td><input class="edit-input ow-desc" value="${esc(o.desc)}" onchange="recalc()" placeholder="e.g. Aug reimbursement" style="min-width:160px"></td>
+        <td>
+          <select class="edit-input ow-type" onchange="recalc()" style="cursor:pointer;max-width:140px">
+            <option value="Salary Due"      ${o.type==='Salary Due'?'selected':''}>Salary Due</option>
+            <option value="Reimbursement"   ${o.type==='Reimbursement'?'selected':''}>Reimbursement</option>
+            <option value="Expense Claim"   ${o.type==='Expense Claim'?'selected':''}>Expense Claim</option>
+            <option value="Other"           ${o.type==='Other'?'selected':''}>Other</option>
+          </select>
+        </td>
+        <td><input class="edit-input ow-amt" type="number" value="${o.amount||0}" onchange="recalc()" style="max-width:110px"></td>
+        <td><input class="edit-input ow-since" value="${esc(o.since)}" onchange="recalc()" placeholder="e.g. Oct 2024" style="max-width:100px"></td>
+        <td><input class="edit-input ow-notes" value="${esc(o.notes)}" onchange="recalc()" placeholder="Status / follow-up" style="min-width:140px"></td>
+        <td>
+          <select class="edit-input ow-buy" onchange="recalc()" style="cursor:pointer;max-width:140px">
+            <option value="">— none —</option>
+            ${buyItems.map(it=>`<option value="${esc(it)}" ${o.buyLink===it?'selected':''}>${esc(it)}</option>`).join('')}
+          </select>
+        </td>
+        <td><button class="del-btn" onclick="delOwed(${i})">✕</button></td>
+      </tr>`).join('');
+  recalcOwed();
+}
+function toggleOwed(i) {
+  harvestAll();
+  data.owedEntries[i].received = !data.owedEntries[i].received;
+  renderOwed(); recalc();
+}
+function addOwedEntry() {
+  data.owedEntries.push({desc:'',type:'Reimbursement',amount:0,since:'',notes:'',buyLink:'',received:false});
+  renderOwed();
+}
+function delOwed(i) { harvestAll(); data.owedEntries.splice(i,1); renderOwed(); recalc(); }
+
+function recalcOwed() {
+  const entries   = data.owedEntries||[];
+  const pending   = entries.filter(o=>!o.received);
+  const recovered = entries.filter(o=>o.received);
+  const pendingAmt   = pending.reduce((s,o)=>s+(o.amount||0),0);
+  const recoveredAmt = recovered.reduce((s,o)=>s+(o.amount||0),0);
+
+  // current financials
+  const addlTotal   = (data.additionalIncome||[]).reduce((s,a)=>s+(a.amount||0),0);
+  const totalIncome = (data.incomeSelf||0)+(data.incomeWife||0)+addlTotal;
+  const totalExp    = (data.expenses||[]).reduce((s,e)=>s+(e.amount||0),0);
+  const surplus     = totalIncome - totalExp;
+  const newSurplus  = surplus + pendingAmt;
+  const efTarget    = totalExp * 18;
+  const efMonths    = totalExp > 0 ? (pendingAmt/totalExp).toFixed(1) : 0;
+
+  set('owed-total',       inr(pendingAmt));
+  set('owed-recovered',   inr(recoveredAmt));
+  set('owed-new-surplus', inr(newSurplus));
+  set('owed-surplus-delta', `vs current ${inr(surplus)} (+${inr(pendingAmt)})`);
+  set('owed-ef-impact',   efMonths+'×');
+  set('owed-ef-sub',      `= ${efMonths} months of expenses covered`);
+
+  // Motivation banner
+  let banner = '';
+  if (pendingAmt <= 0) {
+    banner = `<div style="font-size:.9rem;font-weight:600;color:var(--green)">🎉 Nothing pending! You're all square.</div>`;
+  } else {
+    const urgentCount = pending.filter(o=>o.since).length;
+    const oldestNote  = pending.filter(o=>o.since).sort((a,b)=>a.since.localeCompare(b.since))[0];
+    banner = `
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:.75rem">
+        <div>
+          <div class="card-label" style="margin-bottom:.3rem">💡 Your Money. Their Pocket.</div>
+          <div style="font-size:1rem;font-weight:700">${inr(pendingAmt)} is sitting with your employer right now.</div>
+          ${oldestNote?`<div style="font-size:.76rem;color:var(--muted);margin-top:.25rem">Oldest entry: <strong style="color:var(--yellow)">${esc(oldestNote.desc)}</strong> since ${esc(oldestNote.since)}</div>`:''}
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:.72rem;color:var(--muted)">If recovered → your savings rate becomes</div>
+          <div style="font-size:1.4rem;font-weight:700;color:var(--green);font-family:var(--mono)">${totalIncome>0?(newSurplus/totalIncome*100).toFixed(1):'—'}%</div>
+          <div style="font-size:.7rem;color:var(--muted)">vs current ${totalIncome>0?(surplus/totalIncome*100).toFixed(1):'—'}%</div>
+        </div>
+      </div>
+      <div style="margin-top:.85rem;font-size:.78rem;color:var(--muted)">
+        🚀 That covers <strong style="color:var(--text)">${efMonths} months</strong> of your emergency fund &nbsp;·&nbsp;
+        Changes your traffic light to <strong style="color:${newSurplus>=150000?'var(--green)':newSurplus>=100000?'var(--yellow)':'var(--red)'}">${newSurplus>=150000?'🟢 Green':newSurplus>=100000?'🟡 Yellow':'🔴 Red'}</strong>
+      </div>`;
+  }
+  set('owed-motivation', banner);
+
+  // Buy list items this money covers
+  const buyPreview = (data.buyList||[])
+    .filter(b=>!b.bought && b.cost>0 && b.cost<=pendingAmt)
+    .sort((a,b)=>b.cost-a.cost);
+  let remaining = pendingAmt;
+  const canAfford = [], almostAfford = [];
+  (data.buyList||[]).filter(b=>!b.bought&&b.cost>0).forEach(b=>{
+    if (b.cost <= pendingAmt) canAfford.push(b);
+    else if (b.cost <= pendingAmt * 1.3) almostAfford.push(b);
+  });
+
+  set('owed-buylist-preview',
+    pendingAmt<=0
+    ? '<div style="font-size:.82rem;color:var(--muted)">Add pending entries above to see what you could buy.</div>'
+    : `
+      ${canAfford.length ? `
+        <div style="font-size:.78rem;font-weight:600;color:var(--green);margin-bottom:.5rem">✅ Can afford right now (${canAfford.length} item${canAfford.length>1?'s':''})</div>
+        ${canAfford.map(b=>`
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:.45rem 0;border-bottom:1px solid var(--border)">
+            <div>
+              <span style="font-size:.83rem">${esc(b.item)}</span>
+              ${b.priority?`<span style="font-size:.68rem;font-family:var(--mono);margin-left:.4rem;color:${b.priority==='P1'?'var(--red)':b.priority==='P2'?'var(--yellow)':'var(--accent)'}">${b.priority}</span>`:''}
+            </div>
+            <span style="font-family:var(--mono);font-size:.8rem;color:var(--green)">${inr(b.cost)}</span>
+          </div>`).join('')}
+      ` : '<div style="font-size:.8rem;color:var(--muted)">No buy list items within pending amount.</div>'}
+      ${almostAfford.length ? `
+        <div style="font-size:.78rem;font-weight:600;color:var(--yellow);margin-top:.85rem;margin-bottom:.5rem">🔜 Almost there (within 30% of pending amount)</div>
+        ${almostAfford.map(b=>`
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:.45rem 0;border-bottom:1px solid var(--border)">
+            <span style="font-size:.83rem">${esc(b.item)}</span>
+            <span style="font-family:var(--mono);font-size:.8rem;color:var(--yellow)">${inr(b.cost)} <span style="color:var(--muted);font-size:.7rem">(need ${inr(b.cost-pendingAmt)} more)</span></span>
+          </div>`).join('')}
+      ` : ''}
+    `
+  );
+}
+
+// ══ RENDER LOCKED ══
 function renderLocked() {
-  const tbody = document.getElementById('locked-body');
-  tbody.innerHTML = (data.lockedSavings||[]).map((s,i) => `
-    <tr>
-      <td><input class="edit-input" value="${s.name||''}" oninput="recalc()" placeholder="Name"></td>
-      <td><span class="chip">Locked</span></td>
-      <td><input class="edit-input" type="number" value="${s.amount||0}" oninput="recalc()" style="max-width:130px"></td>
-      <td><button class="del-btn" onclick="delLocked(${i})">✕</button></td>
-    </tr>
-  `).join('');
+  document.getElementById('locked-body').innerHTML =
+    (data.lockedSavings||[]).map((s,i)=>`
+      <tr>
+        <td><input class="edit-input" value="${esc(s.name)}" onchange="recalc()" placeholder="Name"></td>
+        <td><input class="edit-input" type="number" value="${s.amount||0}" onchange="recalc()" style="max-width:150px"></td>
+        <td><button class="del-btn" onclick="delLocked(${i})">✕</button></td>
+      </tr>`).join('');
 }
-function addLockedEntry() { data.lockedSavings.push({name:'',type:'Locked',amount:0}); renderLocked(); recalc(); }
-function delLocked(i) { data.lockedSavings.splice(i,1); renderLocked(); recalc(); }
+function addLockedEntry() { data.lockedSavings.push({name:'',amount:0}); renderLocked(); recalc(); }
+function delLocked(i)     { harvestAll(); data.lockedSavings.splice(i,1); renderLocked(); recalc(); }
 
-// ──────────────────────────────────────────
-//  RECALC — central brain
-// ──────────────────────────────────────────
+// ══ RECALC (display only — no DOM rebuilds) ══
 function recalc() {
-  syncFromDOM();
+  harvestAll();
 
-  const totalIncome   = (data.incomeSelf||0) + (data.incomeWife||0);
-  const totalExpenses = (data.expenses||[]).reduce((s,e)=>s+(e.amount||0),0);
-  const surplus       = totalIncome - totalExpenses;
-  const savingsRate   = totalIncome ? (surplus / totalIncome * 100) : 0;
+  const addlTotal   = (data.additionalIncome||[]).reduce((s,a)=>s+(a.amount||0),0);
+  const totalIncome = (data.incomeSelf||0)+(data.incomeWife||0)+addlTotal;
+  const totalExp    = (data.expenses||[]).reduce((s,e)=>s+(e.amount||0),0);
+  const surplus     = totalIncome - totalExp;
+  const savRate     = totalIncome ? surplus/totalIncome*100 : 0;
 
-  // Emergency fund
   const lockedTotal = (data.lockedSavings||[]).reduce((s,e)=>s+(e.amount||0),0);
   const liquidAmt   = data.liquidSavings||0;
-  const efTotal     = liquidAmt + lockedTotal;
-  const efTarget    = totalExpenses * 18; // 1.5 years = 18 months
-  const efPct       = efTarget ? Math.min(100, Math.round(efTotal/efTarget*100)) : 0;
+  // EF = liquid only. Locked savings are separate wealth, not emergency fund.
+  const efTarget    = totalExp * 18;
+  const efPct       = efTarget ? Math.min(100,Math.round(liquidAmt/efTarget*100)) : 0;
 
-  // ── Overview KPIs
+  // KPIs
   set('ov-income',   inr(totalIncome));
-  set('ov-expenses', inr(totalExpenses));
+  set('ov-expenses', inr(totalExp));
   set('ov-surplus',  inr(surplus));
-  set('ov-rate',     savingsRate.toFixed(1)+'%');
+  set('ov-rate',     savRate.toFixed(1)+'%');
   set('ov-rate-sub', `target: ${data.targetRate||30}%`);
-  set('money-total-income',    inr(totalIncome));
-  set('money-total-expenses',  inr(totalExpenses));
-  set('money-surplus',         inr(surplus));
-  set('money-curr-rate',       savingsRate.toFixed(1)+'%');
+  set('money-total-income',   inr(totalIncome));
+  set('money-total-expenses', inr(totalExp));
+  set('money-surplus',        inr(surplus));
+  set('money-curr-rate',      savRate.toFixed(1)+'%');
+  set('additional-total',     inr(addlTotal));
 
-  // Traffic light
+  // traffic light
   const light = document.getElementById('ov-light');
-  if (surplus >= 150000) { light.className='savings-light light-green'; light.textContent='🟢 Above ₹1.5L'; }
-  else if (surplus >= 100000) { light.className='savings-light light-yellow'; light.textContent='🟡 ₹1L–₹1.5L'; }
-  else { light.className='savings-light light-red'; light.textContent='🔴 Below ₹1L'; }
+  if (surplus>=150000)      { light.className='savings-light light-green';  light.textContent='🟢 Above ₹1.5L'; }
+  else if (surplus>=100000) { light.className='savings-light light-yellow'; light.textContent='🟡 ₹1L – ₹1.5L'; }
+  else                      { light.className='savings-light light-red';    light.textContent='🔴 Below ₹1L'; }
 
-  // ── Emergency fund display
-  set('ov-ef-liquid',  inr(liquidAmt));
-  set('ov-ef-locked',  inr(lockedTotal));
-  set('ov-ef-total-label',  inr(efTotal));
-  set('ov-ef-target-label', inr(efTarget));
-  set('ov-ef-pct', `${efPct}% of target`);
-  setWidth('ov-ef-bar', efPct);
-
+  // EF (liquid only)
+  set('ov-ef-liquid',       inr(liquidAmt));
+  set('ov-ef-total-label',  inr(liquidAmt));
+  set('ov-ef-target-label', 'target: '+inr(efTarget));
+  set('ov-ef-pct',          efPct+'% of target');
+  setW('ov-ef-bar', efPct);
   set('sav-liquid',    inr(liquidAmt));
   set('sav-locked',    inr(lockedTotal));
   set('sav-target',    inr(efTarget));
-  set('sav-target-sub','1.5× monthly expenses');
   set('sav-liq-label', inr(liquidAmt));
-  set('sav-tot-label', inr(efTotal));
   set('sav-tgt-label', inr(efTarget));
-  setWidth('sav-bar',  efPct);
-  set('sav-bar-pct',   `${efPct}% of target reached`);
+  setW('sav-bar', efPct);
+  set('sav-bar-pct', efPct+'% reached');
   set('sav-locked-total', inr(lockedTotal));
+  const mtt = data.monthlyContribution ? Math.ceil((efTarget-liquidAmt)/data.monthlyContribution) : null;
+  set('sav-months-to-target', mtt&&mtt>0 ? mtt+' months' : mtt<=0 ? '✓ Reached!' : '—');
 
-  const monthsToTarget = data.monthlyContribution ? Math.ceil((efTarget - efTotal) / data.monthlyContribution) : null;
-  set('sav-months-to-target', monthsToTarget && monthsToTarget > 0 ? `${monthsToTarget} months` : monthsToTarget <= 0 ? '✓ Target reached!' : '—');
-
-  // ── Debt counter
-  const dm = data.debtMonthsLeft||0;
-  const dt = data.debtTotalMonths||180;
-  const doneMonths = Math.max(0, dt - dm);
-  const debtPct = dt ? Math.round(doneMonths/dt*100) : 0;
-  set('debt-months', `${dm}<span> months left</span>`);
-  setWidth('debt-progress', debtPct);
-  if (dm > 0) {
-    const freeDate = new Date();
-    freeDate.setMonth(freeDate.getMonth() + dm);
-    set('debt-end-label', `Freedom date: ${freeDate.toLocaleDateString('en-IN',{month:'long',year:'numeric'})}`);
+  // Debt — calculated from EMI + outstanding
+  const emi  = data.debtEmi||0;
+  const out  = data.debtOutstanding||0;
+  const orig = data.debtOriginal||0;
+  const dm   = emi>0 ? Math.ceil(out/emi) : 0;
+  const dPct = orig>0 ? Math.min(100, Math.round((orig-out)/orig*100)) : 0;
+  set('debt-months', dm>0 ? dm+'<span> months left</span>' : emi&&out ? '< 1 month!' : '—');
+  setW('debt-progress', dPct);
+  if (dm>0) {
+    const fd = new Date(); fd.setMonth(fd.getMonth()+dm);
+    set('debt-end-label','Freedom date: '+fd.toLocaleDateString('en-IN',{month:'long',year:'numeric'}));
+  } else {
+    set('debt-end-label', out===0&&orig>0 ? '🎉 Loan cleared!' : 'Set loan details in Savings tab');
   }
 
-  // ── Category spend overview (alerts)
-  const catBudgets = {};
-  (data.expenses||[]).forEach(e => {
-    if (!catBudgets[e.category]) catBudgets[e.category] = 0;
-    catBudgets[e.category] += (e.amount||0);
-  });
-  const catSpent = {};
-  Object.keys(data.weeklySpend||{}).forEach(cat => {
-    catSpent[cat] = (data.weeklySpend[cat]||[]).reduce((a,b)=>a+b,0);
-  });
+  // Item spend overview + alerts
+  const itemSpent = {};
+  Object.keys(data.weeklySpend||{}).forEach(k => { itemSpent[k]=(data.weeklySpend[k]||[]).reduce((a,b)=>a+b,0); });
 
-  // Build overview alerts
-  let alertsHTML = '';
-  const cats75 = [], cats90 = [], catsOver = [];
-  Object.keys(catBudgets).forEach(cat => {
-    const budget = catBudgets[cat];
-    const spent  = catSpent[cat]||0;
-    if (!budget) return;
-    const pct = spent/budget*100;
-    if (pct >= 100) catsOver.push({cat,spent,budget,pct});
-    else if (pct >= 90) cats90.push({cat,spent,budget,pct});
-    else if (pct >= 75) cats75.push({cat,spent,budget,pct});
+  let alertsHTML='', over=[], w90=[], w75=[];
+  (data.expenses||[]).forEach(e => {
+    const sp=itemSpent[e.item]||0, b=e.amount||0;
+    if (!b) return;
+    const p=sp/b*100;
+    if (p>=100) over.push({item:e.item,sp,b,p});
+    else if (p>=90) w90.push({item:e.item,sp,b,p});
+    else if (p>=75) w75.push({item:e.item,sp,b,p});
   });
-  if (catsOver.length) alertsHTML += `<div class="card gap" style="border-color:var(--red);background:var(--red-soft)"><div style="font-size:.82rem;font-weight:600;color:var(--red);margin-bottom:.4rem">🚨 Over Budget</div>${catsOver.map(x=>`<div style="font-size:.8rem;color:var(--text)">${x.cat}: ${inr(x.spent)} / ${inr(x.budget)} (${Math.round(x.pct)}%)</div>`).join('')}</div>`;
-  if (cats90.length)  alertsHTML += `<div class="card gap" style="border-color:var(--orange);background:var(--orange-soft)"><div style="font-size:.82rem;font-weight:600;color:var(--orange);margin-bottom:.4rem">⚠️ 90% — Last Chance</div>${cats90.map(x=>`<div style="font-size:.8rem;color:var(--text)">${x.cat}: ${inr(x.spent)} / ${inr(x.budget)}</div>`).join('')}</div>`;
-  if (cats75.length)  alertsHTML += `<div class="card gap" style="border-color:var(--yellow);background:var(--yellow-soft)"><div style="font-size:.82rem;font-weight:600;color:var(--yellow);margin-bottom:.4rem">🟡 75% — Early Warning</div>${cats75.map(x=>`<div style="font-size:.8rem;color:var(--text)">${x.cat}: ${inr(x.spent)} / ${inr(x.budget)}</div>`).join('')}</div>`;
+  const alertBlock=(arr,cls,emoji,label)=>arr.length?`<div class="card gap" style="border-color:${cls==='over'?'var(--red)':cls==='90'?'var(--orange)':'var(--yellow)'};background:${cls==='over'?'var(--red-soft)':cls==='90'?'var(--orange-soft)':'var(--yellow-soft)'}"><div style="font-size:.8rem;font-weight:600;color:${cls==='over'?'var(--red)':cls==='90'?'var(--orange)':'var(--yellow)'};margin-bottom:.4rem">${emoji} ${label}</div>${arr.map(x=>`<div style="font-size:.78rem">${x.item}: ${inr(x.sp)} / ${inr(x.b)}</div>`).join('')}</div>`:'';
+  alertsHTML = alertBlock(over,'over','🚨','Over Budget') + alertBlock(w90,'90','⚠️','90% — Last Chance') + alertBlock(w75,'75','🟡','75% — Early Warning');
   document.getElementById('alerts-container').innerHTML = alertsHTML;
 
-  // category spend on overview
-  const csHTML = Object.keys(catBudgets).map(cat => {
-    const budget = catBudgets[cat];
-    const spent  = catSpent[cat]||0;
-    const pct    = budget ? Math.min(100, Math.round(spent/budget*100)) : 0;
-    let fc='fill-green';
-    if (pct>=100) fc='fill-red'; else if(pct>=90) fc='fill-orange'; else if(pct>=75) fc='fill-yellow';
-    return `<div style="margin-bottom:.6rem">
-      <div style="display:flex;justify-content:space-between;font-size:.78rem;margin-bottom:.25rem">
-        <span>${cat}</span><span style="color:var(--muted)">${inr(spent)} / ${inr(budget)}</span>
-      </div>
-      <div class="progress-wrap"><div class="progress-fill ${fc}" style="width:${pct}%"></div></div>
-    </div>`;
-  }).join('');
-  set('category-spend-overview', csHTML);
+  // Item spend list on overview
+  set('item-spend-overview',
+    (data.expenses||[]).map(e=>{
+      const sp=itemSpent[e.item]||0, b=e.amount||0;
+      const p=b?Math.min(100,Math.round(sp/b*100)):0;
+      const fc=p>=100?'fill-red':p>=90?'fill-orange':p>=75?'fill-yellow':'fill-green';
+      return `<div style="margin-bottom:.55rem">
+        <div style="display:flex;justify-content:space-between;font-size:.75rem;margin-bottom:.2rem">
+          <span>${e.item}<span style="color:var(--muted);font-size:.68rem"> · ${e.category}</span></span>
+          <span style="color:var(--muted);font-family:var(--mono)">${inr(sp)} / ${inr(b)}</span>
+        </div>
+        <div class="progress-wrap" style="height:4px"><div class="progress-fill ${fc}" style="width:${p}%"></div></div>
+      </div>`;
+    }).join('')
+  );
 
-  // ── Buy list
-  const boughtVal = (data.buyList||[]).filter(b=>b.bought).reduce((s,b)=>s+(b.cost||0),0);
-  const totalVal  = (data.buyList||[]).reduce((s,b)=>s+(b.cost||0),0);
+  // Buy list
+  const boughtVal=(data.buyList||[]).filter(b=>b.bought).reduce((s,b)=>s+(b.cost||0),0);
+  const totalVal =(data.buyList||[]).reduce((s,b)=>s+(b.cost||0),0);
   set('bl-total',     inr(totalVal));
   set('bl-bought',    inr(boughtVal));
-  set('bl-remaining', inr(totalVal - boughtVal));
-  set('bl-ef-pct-label', `${efPct}%`);
-  setWidth('bl-ef-bar', efPct);
+  set('bl-remaining', inr(totalVal-boughtVal));
 
-  (data.buyList||[]).forEach((b,i) => {
-    const el = document.getElementById(`bl-status-${i}`);
-    if (!el) return;
-    const unlocked = efPct >= b.unlockPct;
-    el.innerHTML = b.bought
-      ? `<span class="unlock-badge unlocked">✓ Bought</span>`
-      : unlocked
-      ? `<span class="unlock-badge unlocked">🔓 Unlocked</span>`
-      : `<span class="unlock-badge locked-badge">🔒 at ${b.unlockPct}%</span>`;
-  });
+  // Pinned items on overview
+  const pinned=(data.buyList||[]).filter(b=>b.pinned&&!b.bought);
+  const priLabel=p=>p==='P1'?'<span style="color:var(--red);font-weight:600">P1</span>':p==='P2'?'<span style="color:var(--yellow);font-weight:600">P2</span>':p==='P3'?'<span style="color:var(--accent);font-weight:600">P3</span>':'';
+  set('ov-pinned', pinned.length
+    ? pinned.map(b=>`
+        <div class="pinned-item">
+          <div>
+            <div style="font-size:.84rem">${b.item} ${b.nextToBuy?'<span style="background:var(--green-soft);color:var(--green);font-size:.68rem;padding:.15rem .4rem;border-radius:4px;font-family:var(--mono)">🎯 Next</span>':''}</div>
+            ${b.remarks?`<div style="font-size:.72rem;color:var(--muted)">${b.remarks}</div>`:''}
+          </div>
+          <div style="display:flex;align-items:center;gap:.75rem">
+            ${priLabel(b.priority)}
+            <span style="font-family:var(--mono);font-size:.8rem;color:var(--muted)">${inr(b.cost)}</span>
+          </div>
+        </div>`).join('')
+    : '<div style="font-size:.8rem;color:var(--muted)">Pin 📌 items from the Buy List to track them here.</div>'
+  );
 
-  // buy list preview on overview
-  const nextItems = (data.buyList||[]).filter(b=>!b.bought).slice(0,4);
-  set('ov-buy-preview', nextItems.map(b => {
-    const unlocked = efPct >= b.unlockPct;
-    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid var(--border)">
-      <span style="font-size:.85rem">${b.item}</span>
-      <div style="display:flex;align-items:center;gap:.75rem">
-        <span style="font-size:.8rem;color:var(--muted);font-family:var(--mono)">${inr(b.cost)}</span>
-        ${unlocked
-          ? `<span class="unlock-badge unlocked">🔓 Unlocked</span>`
-          : `<span class="unlock-badge locked-badge">🔒 needs ${b.unlockPct}% EF</span>`}
-      </div>
-    </div>`;
-  }).join(''));
+  // FY
+  const now=new Date();
+  const fyStart=now.getMonth()>=3?new Date(now.getFullYear(),3,1):new Date(now.getFullYear()-1,3,1);
+  const md=Math.min(12,Math.max(1,Math.round((now-fyStart)/(1000*60*60*24*30.4))));
+  set('fy-earned', inr(totalIncome*md));
+  set('fy-spent',  inr(totalExp*md));
+  set('fy-saved',  inr(surplus*md));
+  set('fy-rate',   savRate.toFixed(1)+'%');
+  const MONTHS=['Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar'];
+  set('fy-monthly', MONTHS.slice(0,md).map(m=>`<tr><td>${m}</td><td style="font-family:var(--mono)">${inr(totalIncome)}</td><td style="font-family:var(--mono)">${inr(totalExp)}</td><td style="color:var(--green);font-family:var(--mono)">${inr(surplus)}</td></tr>`).join(''));
 
-  // ── FY Summary
-  const now = new Date();
-  const fyStart = now.getMonth() >= 3 ? new Date(now.getFullYear(),3,1) : new Date(now.getFullYear()-1,3,1);
-  const monthsDone = Math.min(12, Math.max(1, Math.round((now - fyStart)/(1000*60*60*24*30.4))));
-  set('fy-earned', inr(totalIncome * monthsDone));
-  set('fy-spent',  inr(totalExpenses * monthsDone));
-  set('fy-saved',  inr(surplus * monthsDone));
-  set('fy-rate',   savingsRate.toFixed(1)+'%');
+  set('fy-items',
+    (data.expenses||[]).map(e=>`
+      <div style="display:flex;justify-content:space-between;padding:.38rem 0;border-bottom:1px solid var(--border);font-size:.8rem">
+        <span>${e.item}<span style="color:var(--muted);font-size:.68rem"> · ${e.category}</span></span>
+        <span style="font-family:var(--mono);color:var(--muted)">${inr((e.amount||0)*md)}</span>
+      </div>`).join('')
+  );
 
-  const MONTHS = ['Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar'];
-  set('fy-monthly', MONTHS.slice(0,monthsDone).map(m=>`
-    <tr><td>${m}</td><td style="font-family:var(--mono)">${inr(totalIncome)}</td><td style="font-family:var(--mono)">${inr(totalExpenses)}</td><td style="color:var(--green);font-family:var(--mono)">${inr(surplus)}</td></tr>
-  `).join(''));
-
-  const catTotals = {};
-  (data.expenses||[]).forEach(e=>{
-    catTotals[e.category]=(catTotals[e.category]||0)+((e.amount||0)*monthsDone);
-  });
-  set('fy-cats', Object.entries(catTotals).sort((a,b)=>b[1]-a[1]).map(([c,v])=>`
-    <div style="display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid var(--border);font-size:.83rem">
-      <span>${c}</span><span style="font-family:var(--mono);color:var(--muted)">${inr(v)}</span>
-    </div>`).join(''));
-
-  const topCat = Object.entries(catTotals).sort((a,b)=>b[1]-a[1])[0];
-  set('fy-insights', `
-    <p>💡 Biggest spend: <strong style="color:var(--text)">${topCat?.[0]||'—'}</strong> at ${inr(topCat?.[1]||0)} YTD.</p>
+  const topItem=(data.expenses||[]).sort((a,b)=>b.amount-a.amount)[0];
+  set('fy-insights',`
+    <p>💡 Biggest item: <strong style="color:var(--text)">${topItem?.item||'—'}</strong> — ${inr((topItem?.amount||0)*md)} YTD.</p>
     <p style="margin-top:.5rem">📈 Full FY projection: save <strong style="color:var(--green)">${inr(surplus*12)}</strong>.</p>
-    <p style="margin-top:.5rem">${savingsRate>=(data.targetRate||30)?'✅ On track!':'⚠️ Below target.'} Rate: ${savingsRate.toFixed(1)}% vs target ${data.targetRate||30}%.</p>
-    <p style="margin-top:.5rem">🎓 Loan frees up ${inr(38000)}/month in ~${dm} months.</p>
+    <p style="margin-top:.5rem">${savRate>=(data.targetRate||30)?'✅ On track!':'⚠️ Below target.'} Rate: ${savRate.toFixed(1)}% vs target ${data.targetRate||30}%.</p>
+    <p style="margin-top:.5rem">🎓 Loan outstanding: <strong style="color:var(--accent)">${inr(data.debtOutstanding)}</strong> · ~${data.debtEmi>0?Math.ceil((data.debtOutstanding||0)/(data.debtEmi||1))+' months left':'set EMI in Savings tab'}.</p>
   `);
-
-  // re-render weekly to reflect updated weekly spend
-  renderWeekly();
 }
 
-// ──────────────────────────────────────────
-//  HELPERS
-// ──────────────────────────────────────────
-function set(id, html) {
-  const el = document.getElementById(id);
-  if (el) el.innerHTML = html;
-}
-function setWidth(id, pct) {
-  const el = document.getElementById(id);
-  if (el) el.style.width = Math.min(100,Math.max(0,pct))+'%';
+// ══ HELPERS ══
+function set(id,html){ const e=document.getElementById(id); if(e) e.innerHTML=html; }
+function setW(id,pct){ const e=document.getElementById(id); if(e) e.style.width=Math.min(100,Math.max(0,pct))+'%'; }
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+
+// called live from debt inputs to update the summary row instantly
+function recalcDebt() {
+  const emi  = +document.getElementById('debt-emi')?.value||0;
+  const out  = +document.getElementById('debt-outstanding')?.value||0;
+  const orig = +document.getElementById('debt-original')?.value||0;
+  const months = emi>0 ? Math.ceil(out/emi) : 0;
+  const pct    = orig>0 ? Math.min(100,Math.round((orig-out)/orig*100)) : 0;
+  const el = document.getElementById('debt-calc-months');
+  const dl = document.getElementById('debt-calc-date');
+  const dp = document.getElementById('debt-calc-pct');
+  if (el) el.textContent = months>0 ? months+' months' : emi&&out ? '< 1 month!' : '—';
+  if (dp) dp.textContent = orig>0 ? pct+'% paid off' : '—';
+  if (dl) {
+    if (months>0) {
+      const fd=new Date(); fd.setMonth(fd.getMonth()+months);
+      dl.textContent = fd.toLocaleDateString('en-IN',{month:'long',year:'numeric'});
+    } else { dl.textContent = out===0&&orig>0?'🎉 Cleared!':'—'; }
+  }
+  recalc();
 }
 
 function switchTab(name) {
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  document.querySelectorAll('.mnav-item').forEach(n=>n.classList.remove('active'));
   document.getElementById('tab-'+name)?.classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(n=>{ if(n.textContent.toLowerCase().includes(name.slice(0,3))) n.classList.add('active'); });
-  document.querySelectorAll('.mnav-item').forEach(n=>{ if(n.textContent.toLowerCase().includes(name.slice(0,3))) n.classList.add('active'); });
+  document.querySelectorAll('.nav-item,.mnav-item').forEach(n=>n.classList.remove('active'));
+  const map={'overview':'◉','money':'₹','weekly':'📅','buylist':'◎','savings':'◈','fy':'📊','owed':'💸'};
+  document.querySelectorAll('.nav-item,.mnav-item').forEach(n=>{ if(n.textContent.includes(map[name])) n.classList.add('active'); });
 }
 
-function setGreeting() {
-  const h = new Date().getHours();
-  const el = document.getElementById('greeting-time');
-  if (el) el.textContent = h<12?'morning':h<17?'afternoon':'evening';
-}
+function setGreeting(){ const h=new Date().getHours(); const el=document.getElementById('greeting-time'); if(el) el.textContent=h<12?'morning':h<17?'afternoon':'evening'; }
 
-// ──────────────────────────────────────────
-//  INIT
-// ──────────────────────────────────────────
+// ══ INIT ══
 window.onload = async () => {
   setGreeting();
-  syncToDOM();
+  populateStaticInputs();
+  renderExpenses();
+  renderAdditionalIncome();
+  buildWeeklyTable();
+  renderBuyList();
+  renderLocked();
+  renderOwed();
   recalc();
   await loadData();
-  // auto-save on input after 2s debounce
+  // auto-save: only on change/blur, never on every keystroke
   let saveTimer;
-  document.body.addEventListener('input', () => {
-    clearTimeout(saveTimer);
-    saveTimer = setTimeout(saveData, 2000);
-  });
+  document.body.addEventListener('change', ()=>{ clearTimeout(saveTimer); saveTimer=setTimeout(saveData,1500); });
+  document.body.addEventListener('blur',   ()=>{ clearTimeout(saveTimer); saveTimer=setTimeout(saveData,1500); }, true);
 };
 </script>
 </body>
