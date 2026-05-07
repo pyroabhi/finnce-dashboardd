@@ -1,1285 +1,1087 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Finance Dashboard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #0a0a0f;
-      --card: #12121a;
-      --card-hover: #1a1a24;
-      --border: #2a2a3a;
-      --text: #e4e4e7;
-      --text-muted: #71717a;
-      --accent: #6366f1;
-      --accent-soft: rgba(99,102,241,0.15);
-      --green: #22c55e;
-      --green-soft: rgba(34,197,94,0.15);
-      --red: #ef4444;
-      --red-soft: rgba(239,68,68,0.15);
-      --yellow: #eab308;
-      --yellow-soft: rgba(234,179,8,0.15);
+      --bg: #080810;
+      --card: #0f0f1a;
+      --card2: #14141f;
+      --border: #1e1e2e;
+      --text: #e2e2f0;
+      --muted: #5a5a7a;
+      --accent: #7c6af7;
+      --accent-soft: rgba(124,106,247,0.12);
+      --green: #2dd4a0;
+      --green-soft: rgba(45,212,160,0.1);
+      --yellow: #f5c542;
+      --yellow-soft: rgba(245,197,66,0.1);
+      --red: #f25d5d;
+      --red-soft: rgba(242,93,93,0.1);
+      --orange: #fb923c;
+      --orange-soft: rgba(251,146,60,0.1);
+      --mono: 'DM Mono', monospace;
+      --sans: 'Sora', sans-serif;
     }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: 'Inter', -apple-system, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      line-height: 1.5;
-    }
-    .app { display: flex; min-height: 100vh; }
-    
-    /* Sidebar */
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height:100vh; }
+
+    /* ── Layout ── */
+    .app { display:flex; min-height:100vh; }
     .sidebar {
-      width: 220px;
-      background: var(--card);
-      border-right: 1px solid var(--border);
-      padding: 1.5rem 1rem;
-      display: flex;
-      flex-direction: column;
-      position: fixed;
-      height: 100vh;
-      z-index: 100;
+      width:200px; background:var(--card); border-right:1px solid var(--border);
+      padding:1.5rem 1rem; display:flex; flex-direction:column;
+      position:fixed; height:100vh; z-index:100;
     }
-    .logo { font-size: 1.25rem; font-weight: 700; margin-bottom: 2rem; color: var(--accent); }
-    .nav { display: flex; flex-direction: column; gap: 0.25rem; flex: 1; }
+    .logo { font-size:1.1rem; font-weight:700; color:var(--accent); margin-bottom:2rem; letter-spacing:-.02em; }
+    .logo span { font-family:var(--mono); font-size:.7rem; color:var(--muted); display:block; margin-top:2px; }
+    .nav { display:flex; flex-direction:column; gap:.25rem; flex:1; }
     .nav-item {
-      padding: 0.75rem 1rem;
-      border-radius: 8px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      color: var(--text-muted);
-      transition: all 0.2s;
-      font-size: 0.9rem;
+      padding:.65rem .9rem; border-radius:8px; cursor:pointer;
+      font-size:.85rem; color:var(--muted); display:flex; align-items:center; gap:.6rem;
+      transition:all .15s; font-weight:500;
     }
-    .nav-item:hover { background: var(--card-hover); color: var(--text); }
-    .nav-item.active { background: var(--accent-soft); color: var(--accent); font-weight: 500; }
-    .sync-status {
-      margin-top: auto;
-      padding: 1rem;
-      background: var(--card-hover);
-      border-radius: 8px;
-      font-size: 0.8rem;
-    }
-    .sync-dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      display: inline-block;
-      margin-right: 0.5rem;
-      background: var(--yellow);
-    }
-    .sync-dot.connected { background: var(--green); }
+    .nav-item:hover { background:var(--card2); color:var(--text); }
+    .nav-item.active { background:var(--accent-soft); color:var(--accent); }
+    .sync-area { font-size:.75rem; color:var(--muted); padding:.5rem 0; border-top:1px solid var(--border); }
     .sync-btn {
-      margin-top: 0.5rem;
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-      padding: 0.4rem 0.75rem;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.75rem;
-      width: 100%;
+      margin-top:.5rem; background:none; border:1px solid var(--border);
+      color:var(--muted); padding:.4rem .8rem; border-radius:6px; cursor:pointer;
+      font-size:.75rem; width:100%; transition:all .15s; font-family:var(--sans);
     }
-    .sync-btn:hover { background: var(--card); color: var(--text); }
+    .sync-btn:hover { border-color:var(--accent); color:var(--accent); }
+    .main { margin-left:200px; padding:2rem; max-width:960px; }
 
-    /* Main content */
-    .main {
-      flex: 1;
-      margin-left: 220px;
-      padding: 2rem;
-      max-width: 1400px;
-    }
-    .page { display: none; }
-    .page.active { display: block; }
-    
-    /* Header */
-    .page-header { margin-bottom: 2rem; }
-    .page-header h1 { font-size: 1.75rem; font-weight: 600; margin-bottom: 0.25rem; }
-    .page-header p { color: var(--text-muted); }
+    /* ── Tabs ── */
+    .tab { display:none; }
+    .tab.active { display:block; }
 
-    /* Cards */
+    /* ── Cards ── */
     .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1.25rem;
+      background:var(--card); border:1px solid var(--border);
+      border-radius:12px; padding:1.25rem;
     }
-    .card-title {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 0.5rem;
-    }
-    .card-value {
-      font-size: 1.75rem;
-      font-weight: 700;
-    }
-    .card-subtitle { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem; }
+    .card-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin-bottom:1.5rem; }
+    .card-grid .card { padding:1.1rem; }
+    .card-label { font-size:.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; margin-bottom:.4rem; font-family:var(--mono); }
+    .card-value { font-size:1.4rem; font-weight:700; font-family:var(--mono); }
+    .card-sub { font-size:.72rem; color:var(--muted); margin-top:.25rem; }
+    .green { color:var(--green); }
+    .yellow { color:var(--yellow); }
+    .red { color:var(--red); }
+    .accent { color:var(--accent); }
 
-    /* Grid layouts */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
-      margin-bottom: 2rem;
+    /* ── Page header ── */
+    .page-header { margin-bottom:1.5rem; }
+    .page-title { font-size:1.6rem; font-weight:700; letter-spacing:-.03em; }
+    .page-title span { color:var(--accent); }
+    .page-sub { font-size:.82rem; color:var(--muted); margin-top:.3rem; }
+
+    /* ── Savings traffic light ── */
+    .savings-light {
+      display:inline-flex; align-items:center; gap:.5rem;
+      padding:.35rem .8rem; border-radius:99px; font-size:.8rem; font-weight:600; margin-top:.4rem;
     }
-    .two-col {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1.5rem;
-    }
-    .three-col {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1rem;
-      margin-bottom: 1.5rem;
+    .light-green { background:var(--green-soft); color:var(--green); }
+    .light-yellow { background:var(--yellow-soft); color:var(--yellow); }
+    .light-red { background:var(--red-soft); color:var(--red); }
+
+    /* ── Section titles ── */
+    .section-title {
+      font-size:.8rem; font-weight:600; color:var(--muted); text-transform:uppercase;
+      letter-spacing:.07em; margin-bottom:.9rem; font-family:var(--mono);
     }
 
-    /* Inputs */
-    .input-group { margin-bottom: 1rem; }
-    .input-group label {
-      display: block;
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      margin-bottom: 0.35rem;
-    }
-    .input-group input, .input-group select {
-      width: 100%;
-      padding: 0.6rem 0.75rem;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      color: var(--text);
-      font-size: 0.95rem;
-    }
-    .input-group input:focus, .input-group select:focus {
-      outline: none;
-      border-color: var(--accent);
-    }
-    .input-inline {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    .input-inline input {
-      width: 80px;
-      text-align: center;
-      padding: 0.4rem;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      color: var(--text);
-      font-size: 1rem;
-    }
+    /* ── Tables ── */
+    table { width:100%; border-collapse:collapse; font-size:.85rem; }
+    th { text-align:left; padding:.6rem .8rem; color:var(--muted); font-size:.72rem; text-transform:uppercase; letter-spacing:.05em; font-weight:500; border-bottom:1px solid var(--border); font-family:var(--mono); }
+    td { padding:.65rem .8rem; border-bottom:1px solid var(--border); }
+    tr:last-child td { border-bottom:none; }
+    tr:hover td { background:var(--card2); }
 
-    /* Tables */
-    table { width: 100%; border-collapse: collapse; }
-    th, td {
-      padding: 0.75rem;
-      text-align: left;
-      border-bottom: 1px solid var(--border);
+    /* ── Inputs ── */
+    .edit-input {
+      background:transparent; border:none; color:var(--text); font-family:var(--mono);
+      font-size:.85rem; width:100%; outline:none; padding:2px 4px; border-radius:4px;
+      transition:background .15s;
     }
-    th { color: var(--text-muted); font-weight: 500; font-size: 0.8rem; text-transform: uppercase; }
-    td { font-size: 0.9rem; }
-    tr:hover { background: var(--card-hover); }
-    
-    /* Editable cell */
-    .editable {
-      cursor: pointer;
-      padding: 0.25rem 0.5rem;
-      border-radius: 4px;
-      transition: background 0.2s;
+    .edit-input:focus { background:var(--card2); outline:1px solid var(--accent); }
+    .add-btn {
+      background:none; border:1px dashed var(--border); color:var(--muted);
+      padding:.5rem 1rem; border-radius:8px; cursor:pointer; font-size:.82rem;
+      margin-top:.75rem; width:100%; transition:all .15s; font-family:var(--sans);
     }
-    .editable:hover { background: var(--accent-soft); }
-    .editable input {
-      background: var(--bg);
-      border: 1px solid var(--accent);
-      color: var(--text);
-      padding: 0.25rem 0.5rem;
-      border-radius: 4px;
-      width: 100%;
-      font-size: inherit;
+    .add-btn:hover { border-color:var(--accent); color:var(--accent); }
+    .del-btn {
+      background:none; border:none; color:var(--muted); cursor:pointer;
+      font-size:.8rem; padding:2px 6px; border-radius:4px; transition:all .15s;
     }
+    .del-btn:hover { color:var(--red); background:var(--red-soft); }
 
-    /* Buttons */
-    .btn {
-      padding: 0.6rem 1rem;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.85rem;
-      border: none;
-      transition: all 0.2s;
-    }
-    .btn-primary { background: var(--accent); color: white; }
-    .btn-primary:hover { filter: brightness(1.1); }
-    .btn-ghost {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-    }
-    .btn-ghost:hover { background: var(--card-hover); color: var(--text); }
-    .btn-sm { padding: 0.4rem 0.75rem; font-size: 0.8rem; }
-    .btn-danger { background: var(--red-soft); color: var(--red); }
-    .btn-danger:hover { background: var(--red); color: white; }
+    /* ── Progress bars ── */
+    .progress-wrap { background:var(--border); border-radius:99px; height:6px; overflow:hidden; margin-top:.4rem; }
+    .progress-fill { height:100%; border-radius:99px; transition:width .4s; }
+    .fill-green { background:var(--green); }
+    .fill-yellow { background:var(--yellow); }
+    .fill-red { background:var(--red); }
+    .fill-accent { background:var(--accent); }
+    .fill-orange { background:var(--orange); }
 
-    /* Progress bars */
-    .progress-bar {
-      height: 8px;
-      background: var(--border);
-      border-radius: 4px;
-      overflow: hidden;
-      margin-top: 0.5rem;
-    }
-    .progress-fill {
-      height: 100%;
-      background: var(--accent);
-      border-radius: 4px;
-      transition: width 0.3s;
-    }
-    .progress-fill.green { background: var(--green); }
+    /* ── Emergency fund ── */
+    .ef-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem; }
+    .ef-card { background:var(--card2); border:1px solid var(--border); border-radius:10px; padding:1rem; }
+    .ef-label { font-size:.7rem; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; font-family:var(--mono); }
+    .ef-value { font-size:1.25rem; font-weight:700; font-family:var(--mono); margin:.3rem 0; }
+    .ef-sub { font-size:.72rem; color:var(--muted); }
 
-    /* Tags */
-    .tag {
-      display: inline-block;
-      padding: 0.2rem 0.6rem;
-      border-radius: 4px;
-      font-size: 0.75rem;
-      font-weight: 500;
+    /* ── Buy list unlock ── */
+    .unlock-badge {
+      display:inline-block; font-size:.68rem; font-family:var(--mono);
+      padding:.2rem .5rem; border-radius:4px; font-weight:500;
     }
-    .tag-green { background: var(--green-soft); color: var(--green); }
-    .tag-yellow { background: var(--yellow-soft); color: var(--yellow); }
-    .tag-red { background: var(--red-soft); color: var(--red); }
-    .tag-accent { background: var(--accent-soft); color: var(--accent); }
+    .unlocked { background:var(--green-soft); color:var(--green); }
+    .locked-badge { background:var(--card2); color:var(--muted); }
 
-    /* Charts placeholder */
-    .chart-container {
-      height: 200px;
-      display: flex;
-      align-items: flex-end;
-      gap: 0.5rem;
-      padding: 1rem 0;
+    /* ── Debt counter ── */
+    .debt-card {
+      background: linear-gradient(135deg, rgba(124,106,247,.08) 0%, rgba(45,212,160,.05) 100%);
+      border:1px solid rgba(124,106,247,.2); border-radius:12px; padding:1.25rem;
+      margin-bottom:1.5rem;
     }
-    .bar {
-      flex: 1;
-      background: var(--accent);
-      border-radius: 4px 4px 0 0;
-      min-height: 20px;
-      position: relative;
-    }
-    .bar-label {
-      position: absolute;
-      bottom: -1.5rem;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 0.7rem;
-      color: var(--text-muted);
-    }
+    .debt-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:.75rem; }
+    .debt-title { font-size:.85rem; font-weight:600; }
+    .debt-months { font-family:var(--mono); font-size:1.8rem; font-weight:700; color:var(--accent); }
+    .debt-months span { font-size:.85rem; color:var(--muted); font-weight:400; }
 
-    /* Summary section */
-    .summary-row {
-      display: flex;
-      justify-content: space-between;
-      padding: 0.5rem 0;
-      border-bottom: 1px solid var(--border);
-    }
-    .summary-row:last-child { border-bottom: none; }
-    .summary-label { color: var(--text-muted); }
-    .summary-value { font-weight: 600; }
+    /* ── Alert badges ── */
+    .alert-75 { background:var(--yellow-soft); color:var(--yellow); }
+    .alert-90 { background:var(--orange-soft); color:var(--orange); }
+    .alert-over { background:var(--red-soft); color:var(--red); }
 
-    /* Section spacing */
-    section { margin-bottom: 2rem; }
-    section h2 { font-size: 1.25rem; margin-bottom: 1rem; }
+    /* ── Weekly tracker ── */
+    .week-entry { display:flex; gap:.75rem; align-items:center; margin-bottom:.5rem; }
+    .week-tag { font-family:var(--mono); font-size:.72rem; color:var(--muted); min-width:60px; }
+    .week-input {
+      background:var(--card2); border:1px solid var(--border); color:var(--text);
+      font-family:var(--mono); font-size:.85rem; padding:.4rem .7rem;
+      border-radius:6px; width:140px; outline:none; transition:border .15s;
+    }
+    .week-input:focus { border-color:var(--accent); }
+    .week-label { font-size:.8rem; color:var(--muted); flex:1; }
 
-    /* Delete button for rows */
-    .delete-btn {
-      color: var(--text-muted);
-      cursor: pointer;
-      opacity: 0;
-      transition: opacity 0.2s;
-    }
-    tr:hover .delete-btn { opacity: 1; }
-    .delete-btn:hover { color: var(--red); }
+    /* ── Gap ── */
+    .gap { margin-bottom:1.25rem; }
+    .gap-sm { margin-bottom:.75rem; }
+    .flex-row { display:flex; gap:1rem; }
+    .flex-row .card { flex:1; }
 
-    /* Priority badges */
-    .priority-1 { background: var(--red-soft); color: var(--red); }
-    .priority-2 { background: var(--yellow-soft); color: var(--yellow); }
-    .priority-3 { background: var(--green-soft); color: var(--green); }
-
-    /* Checkbox */
-    .checkbox {
-      width: 18px;
-      height: 18px;
-      border: 2px solid var(--border);
-      border-radius: 4px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s;
-    }
-    .checkbox.checked {
-      background: var(--green);
-      border-color: var(--green);
-    }
-    .checkbox.checked::after {
-      content: '✓';
-      color: white;
-      font-size: 12px;
-    }
-
-    /* Savings target input on overview */
-    .target-input-wrapper {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.25rem;
-      background: var(--accent-soft);
-      padding: 0.25rem 0.5rem;
-      border-radius: 6px;
-    }
-    .target-input-wrapper input {
-      width: 50px;
-      background: transparent;
-      border: none;
-      color: var(--accent);
-      font-size: 1rem;
-      font-weight: 600;
-      text-align: center;
-    }
-    .target-input-wrapper input:focus { outline: none; }
-
-    /* FY Summary specific */
-    .fy-card {
-      text-align: center;
-      padding: 1.5rem;
-    }
-    .fy-card .card-value { font-size: 2rem; }
-    .fy-positive { color: var(--green); }
-    .fy-negative { color: var(--red); }
-
-    /* Mobile nav */
+    /* ── Mobile nav ── */
     .mobile-nav {
-      display: none;
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: var(--card);
-      border-top: 1px solid var(--border);
-      padding: 0.5rem;
-      z-index: 100;
+      display:none; position:fixed; bottom:0; left:0; right:0;
+      background:var(--card); border-top:1px solid var(--border);
+      padding:.5rem 0; z-index:200;
     }
-    .mobile-nav-inner {
-      display: flex;
-      justify-content: space-around;
-    }
-    .mobile-nav-item {
-      padding: 0.5rem;
-      text-align: center;
-      color: var(--text-muted);
-      font-size: 0.7rem;
-      cursor: pointer;
-    }
-    .mobile-nav-item.active { color: var(--accent); }
+    .mobile-nav-inner { display:flex; justify-content:space-around; }
+    .mnav-item { display:flex; flex-direction:column; align-items:center; gap:.2rem; padding:.4rem .8rem; cursor:pointer; font-size:.62rem; color:var(--muted); border-radius:8px; }
+    .mnav-item.active { color:var(--accent); }
+    .mnav-icon { font-size:1.1rem; }
 
-    @media (max-width: 768px) {
-      .sidebar { display: none; }
-      .main { margin-left: 0; padding: 1rem; padding-bottom: 5rem; }
-      .mobile-nav { display: block; }
-      .two-col, .three-col { grid-template-columns: 1fr; }
-      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    @media(max-width:700px) {
+      .sidebar { display:none; }
+      .main { margin-left:0; padding:1rem 1rem 5rem; }
+      .mobile-nav { display:block; }
+      .card-grid { grid-template-columns:1fr 1fr; }
+      .ef-grid { grid-template-columns:1fr; }
     }
+
+    /* ── Misc ── */
+    .chip {
+      display:inline-block; font-size:.68rem; padding:.2rem .5rem;
+      border-radius:4px; font-family:var(--mono); background:var(--card2); color:var(--muted);
+    }
+    .row-pair { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.25rem; }
+    select.edit-input { cursor:pointer; }
+    .inline-label { font-size:.78rem; color:var(--muted); margin-bottom:.3rem; display:block; }
+    .big-input {
+      background:var(--card2); border:1px solid var(--border); color:var(--text);
+      font-family:var(--mono); font-size:1rem; padding:.5rem .8rem;
+      border-radius:8px; width:100%; outline:none; transition:border .15s;
+    }
+    .big-input:focus { border-color:var(--accent); }
   </style>
 </head>
 <body>
-  <div class="app">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <div class="logo">finance.</div>
-      <nav class="nav">
-        <div class="nav-item active" data-page="overview">◉ Overview</div>
-        <div class="nav-item" data-page="money">₹ Money</div>
-        <div class="nav-item" data-page="buylist">◎ Buy List</div>
-        <div class="nav-item" data-page="savings">◈ Savings</div>
-        <div class="nav-item" data-page="fysummary">📊 FY Summary</div>
-      </nav>
-      <div class="sync-status">
-        <span class="sync-dot" id="syncDot"></span>
-        <span id="syncText">connecting...</span>
-        <div style="margin-top:0.5rem;font-size:0.7rem;color:var(--text-muted)">
-          Last sync: <span id="lastSync">—</span>
-        </div>
-        <button class="sync-btn" onclick="syncData()">↺ Sync now</button>
-      </div>
-    </aside>
+<div class="app">
 
-    <!-- Main Content -->
-    <main class="main">
-      
-      <!-- OVERVIEW PAGE -->
-      <div class="page active" id="page-overview">
-        <div class="page-header">
-          <h1 id="greeting">Good morning.</h1>
-          <p>Here's where you stand this month. Target savings rate: 
-            <span class="target-input-wrapper">
-              <input type="number" id="targetRateInput" value="42" min="0" max="100" onchange="updateTargetRate(this.value)">
-              <span>%</span>
-            </span>
-          </p>
-        </div>
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="logo">finance.<span>v4 — Abhishek</span></div>
+    <div class="nav">
+      <div class="nav-item active" onclick="switchTab('overview')">◉ &nbsp;Overview</div>
+      <div class="nav-item" onclick="switchTab('money')">₹ &nbsp;Money</div>
+      <div class="nav-item" onclick="switchTab('weekly')">📅 &nbsp;Weekly</div>
+      <div class="nav-item" onclick="switchTab('buylist')">◎ &nbsp;Buy List</div>
+      <div class="nav-item" onclick="switchTab('savings')">◈ &nbsp;Savings</div>
+      <div class="nav-item" onclick="switchTab('fy')">📊 &nbsp;FY Summary</div>
+    </div>
+    <div class="sync-area">
+      <div id="sync-status">connecting…</div>
+      <div id="last-sync">Last sync: —</div>
+      <button class="sync-btn" onclick="saveData()">↺ Sync now</button>
+    </div>
+  </nav>
 
-        <div class="stats-grid">
-          <div class="card">
-            <div class="card-title">Total Income</div>
-            <div class="card-value" id="ov-income">—</div>
-            <div class="card-subtitle">all sources</div>
-          </div>
-          <div class="card">
-            <div class="card-title">Total Expenses</div>
-            <div class="card-value" id="ov-expenses">—</div>
-            <div class="card-subtitle">this month</div>
-          </div>
-          <div class="card">
-            <div class="card-title">Monthly Surplus</div>
-            <div class="card-value" id="ov-surplus">—</div>
-            <div class="card-subtitle">after all expenses</div>
-          </div>
-          <div class="card">
-            <div class="card-title">Savings Rate</div>
-            <div class="card-value" id="ov-rate">—</div>
-            <div class="card-subtitle" id="ov-target-text">target: 42%+</div>
-          </div>
-        </div>
+  <!-- Main -->
+  <main class="main">
 
-        <div class="two-col">
-          <div class="card">
-            <div class="card-title">Expense Breakdown</div>
-            <div class="chart-container" id="expenseChart"></div>
-            <p style="font-size:0.8rem;color:var(--text-muted);margin-top:1rem">Expense categories.</p>
-          </div>
-          <div class="card">
-            <div class="card-title">Emergency Fund</div>
-            <div style="margin:1rem 0">
-              <span>Liquid: <strong id="ov-liquid">—</strong></span><br>
-              <span>Total: <strong id="ov-total-fund">—</strong> of <strong id="ov-fund-target">—</strong></span>
-            </div>
-            <div class="progress-bar">
-              <div class="progress-fill green" id="fundProgress" style="width:0%"></div>
-            </div>
-            <div style="display:flex;gap:1rem;margin-top:1rem;font-size:0.8rem">
-              <span><span style="color:var(--green)">■</span> Liquid</span>
-              <span><span style="color:var(--accent)">■</span> Locked</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="two-col" style="margin-top:1.5rem">
-          <div class="card">
-            <div class="card-title">Next to Buy</div>
-            <div id="nextBuyItem" style="margin-top:0.5rem">—</div>
-          </div>
-          <div class="card">
-            <div class="card-title">Savings Rate vs Target</div>
-            <div style="margin-top:0.5rem">
-              <span>Current <strong id="ov-current-rate">—</strong></span>
-            </div>
-            <div class="progress-bar" style="margin-top:0.5rem">
-              <div class="progress-fill" id="rateProgress" style="width:0%"></div>
-            </div>
-            <div style="font-size:0.8rem;color:var(--text-muted);margin-top:0.5rem">Target: <span id="ov-target-display">42%</span></div>
-          </div>
-        </div>
+    <!-- ══ OVERVIEW ══ -->
+    <div id="tab-overview" class="tab active">
+      <div class="page-header">
+        <div class="page-title">Good <span id="greeting-time">morning</span>.</div>
+        <div class="page-sub">Here's where you stand this month.</div>
       </div>
 
-      <!-- MONEY PAGE -->
-      <div class="page" id="page-money">
-        <div class="page-header">
-          <h1>Income & Expenses</h1>
-          <p>Edit any number — syncs automatically.</p>
-        </div>
-
-        <div class="two-col">
-          <section>
-            <h2>Primary Income</h2>
-            <div class="card">
-              <div class="input-group">
-                <label>Your net monthly income (₹)</label>
-                <input type="number" id="income1" value="220000" onchange="updateData()">
-              </div>
-              <div class="input-group">
-                <label>Wife's net monthly income (₹)</label>
-                <input type="number" id="income2" value="50000" onchange="updateData()">
-              </div>
-            </div>
-
-            <h2 style="margin-top:1.5rem">Additional Income</h2>
-            <div class="card">
-              <div id="additionalIncomeList"></div>
-              <button class="btn btn-ghost btn-sm" onclick="addAdditionalIncome()" style="margin-top:0.5rem">+ Add source</button>
-              <div class="summary-row" style="margin-top:1rem">
-                <span class="summary-label">Additional total</span>
-                <span class="summary-value" id="additionalTotal">₹0</span>
-              </div>
-            </div>
-          </section>
-
-          <section>
-            <h2>Summary</h2>
-            <div class="card">
-              <div class="summary-row">
-                <span class="summary-label">Primary income</span>
-                <span class="summary-value" id="sum-primary">—</span>
-              </div>
-              <div class="summary-row">
-                <span class="summary-label">Additional income</span>
-                <span class="summary-value" id="sum-additional">—</span>
-              </div>
-              <div class="summary-row">
-                <span class="summary-label">Total income</span>
-                <span class="summary-value" id="sum-total">—</span>
-              </div>
-              <div class="summary-row">
-                <span class="summary-label">Expenses</span>
-                <span class="summary-value" id="sum-expenses">—</span>
-              </div>
-              <div class="summary-row">
-                <span class="summary-label">Surplus</span>
-                <span class="summary-value" style="color:var(--green)" id="sum-surplus">—</span>
-              </div>
-              <div class="summary-row">
-                <span class="summary-label">Savings rate</span>
-                <span class="summary-value" id="sum-rate">—</span>
-              </div>
-              <div class="summary-row">
-                <span class="summary-label">Target (<span id="targetInSummary">42</span>%)</span>
-                <span class="summary-value" id="sum-target-met">—</span>
-              </div>
-            </div>
-          </section>
-        </div>
-
-        <section>
-          <h2>Monthly Expenses</h2>
-          <div class="card">
-            <table>
-              <thead>
-                <tr>
-                  <th>Category</th>
-                  <th>Item</th>
-                  <th>Amount (₹)</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody id="expenseTable"></tbody>
-            </table>
-            <button class="btn btn-ghost btn-sm" onclick="addExpenseRow()" style="margin-top:1rem">+ Add row</button>
-          </div>
-        </section>
-      </div>
-
-      <!-- BUY LIST PAGE -->
-      <div class="page" id="page-buylist">
-        <div class="page-header">
-          <h1>Buy List</h1>
-          <p>Tick off as you buy. Set priorities, target months, track savings.</p>
-        </div>
-
-        <div class="three-col">
-          <div class="card">
-            <div class="card-title">Total List Value</div>
-            <div class="card-value" id="buy-total">—</div>
-          </div>
-          <div class="card">
-            <div class="card-title">Bought So Far</div>
-            <div class="card-value" id="buy-bought">—</div>
-          </div>
-          <div class="card">
-            <div class="card-title">Remaining</div>
-            <div class="card-value" id="buy-remaining">—</div>
-          </div>
-        </div>
-
+      <!-- KPI cards -->
+      <div class="card-grid">
         <div class="card">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
-            <span class="card-title" style="margin:0">Items — sorted by priority</span>
-            <button class="btn btn-primary btn-sm" onclick="addBuyItem()">+ Add item</button>
-          </div>
-          <table>
-            <thead>
-              <tr>
-                <th style="width:30px"></th>
-                <th>Item</th>
-                <th>Priority</th>
-                <th>Cost</th>
-                <th>Target Month</th>
-                <th>Saved (₹)</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody id="buyTable"></tbody>
-          </table>
+          <div class="card-label">Total Income</div>
+          <div class="card-value accent" id="ov-income">—</div>
+          <div class="card-sub">all sources</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Total Expenses</div>
+          <div class="card-value" id="ov-expenses">—</div>
+          <div class="card-sub">this month</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Monthly Surplus</div>
+          <div class="card-value" id="ov-surplus">—</div>
+          <div id="ov-light" class="savings-light light-green">🟢 Great</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Savings Rate</div>
+          <div class="card-value" id="ov-rate">—</div>
+          <div class="card-sub" id="ov-rate-sub">target: 30%</div>
         </div>
       </div>
 
-      <!-- SAVINGS PAGE -->
-      <div class="page" id="page-savings">
-        <div class="page-header">
-          <h1>Savings & Emergency Fund</h1>
-          <p>Balanced plan — save half of every increment. Target: 1.5× monthly expenses.</p>
-        </div>
-
-        <div class="three-col">
-          <div class="card">
-            <div class="card-title">Liquid Savings</div>
-            <div class="card-value" id="sav-liquid">—</div>
-            <div class="card-subtitle">available now</div>
+      <!-- Debt Freedom Counter -->
+      <div class="debt-card">
+        <div class="debt-header">
+          <div>
+            <div class="card-label">💳 Debt Freedom Counter</div>
+            <div class="debt-title">Education Loan — ₹38,000 EMI</div>
           </div>
-          <div class="card">
-            <div class="card-title">Total Locked</div>
-            <div class="card-value" id="sav-locked">—</div>
-            <div class="card-subtitle">all locked entries</div>
-          </div>
-          <div class="card">
-            <div class="card-title">Target</div>
-            <div class="card-value" id="sav-target">—</div>
-            <div class="card-subtitle">1.5× expenses</div>
+          <div style="text-align:right">
+            <div class="debt-months" id="debt-months">—<span> months left</span></div>
           </div>
         </div>
-
-        <div class="two-col">
-          <div class="card">
-            <div class="card-title">Fund Progress</div>
-            <div style="margin:1rem 0">
-              Liquid: <strong id="sav-liq-display">—</strong><br>
-              Total: <strong id="sav-total-display">—</strong>
-            </div>
-            <div class="progress-bar">
-              <div class="progress-fill green" id="savingsProgress" style="width:0%"></div>
-            </div>
-            <div style="font-size:0.8rem;color:var(--text-muted);margin-top:0.5rem">Target: <span id="sav-target-display">—</span></div>
-          </div>
-
-          <div class="card">
-            <div class="input-group">
-              <label>Liquid savings (₹)</label>
-              <input type="number" id="liquidSavings" value="0" onchange="updateData()">
-            </div>
-            <div class="input-group">
-              <label>Monthly contribution to liquid fund (₹)</label>
-              <input type="number" id="monthlyContribution" value="0" onchange="updateData()">
-            </div>
-            <div style="font-size:0.85rem;color:var(--text-muted);margin-top:0.5rem">
-              At this rate, liquid target reached in: <strong id="monthsToTarget">—</strong>
-            </div>
-          </div>
+        <div class="progress-wrap" style="height:8px">
+          <div class="progress-fill fill-accent" id="debt-progress" style="width:0%"></div>
         </div>
-
-        <section>
-          <h2>Locked / Long-term Savings</h2>
-          <div class="card">
-            <div id="lockedSavingsList"></div>
-            <button class="btn btn-ghost btn-sm" onclick="addLockedSaving()" style="margin-top:0.5rem">+ Add entry</button>
-            <p style="font-size:0.8rem;color:var(--text-muted);margin-top:1rem">Click the badge to toggle liquid ↔ locked</p>
-            <div class="summary-row" style="margin-top:0.5rem">
-              <span class="summary-label">Total locked</span>
-              <span class="summary-value" id="totalLockedDisplay">—</span>
-            </div>
-          </div>
-        </section>
-      </div>
-
-      <!-- FY SUMMARY PAGE (NEW!) -->
-      <div class="page" id="page-fysummary">
-        <div class="page-header">
-          <h1>📊 FY Summary</h1>
-          <p>Full financial year at a glance. April <span id="fyStart">2025</span> – March <span id="fyEnd">2026</span></p>
+        <div style="display:flex;justify-content:space-between;margin-top:.5rem;font-size:.72rem;color:var(--muted)">
+          <span>Started</span>
+          <span id="debt-end-label">Freedom date: —</span>
         </div>
-
-        <div class="stats-grid">
-          <div class="card fy-card">
-            <div class="card-title">Total Earned (FY)</div>
-            <div class="card-value fy-positive" id="fy-earned">—</div>
-          </div>
-          <div class="card fy-card">
-            <div class="card-title">Total Spent (FY)</div>
-            <div class="card-value fy-negative" id="fy-spent">—</div>
-          </div>
-          <div class="card fy-card">
-            <div class="card-title">Net Saved (FY)</div>
-            <div class="card-value" id="fy-saved">—</div>
-          </div>
-          <div class="card fy-card">
-            <div class="card-title">Avg Savings Rate</div>
-            <div class="card-value" id="fy-rate">—</div>
-          </div>
-        </div>
-
-        <div class="two-col">
-          <div class="card">
-            <div class="card-title">Month-wise Breakdown</div>
-            <table>
-              <thead>
-                <tr>
-                  <th>Month</th>
-                  <th>Income</th>
-                  <th>Expenses</th>
-                  <th>Saved</th>
-                </tr>
-              </thead>
-              <tbody id="fyMonthlyTable"></tbody>
-            </table>
-          </div>
-
-          <div class="card">
-            <div class="card-title">Category-wise Spending (FY)</div>
-            <div id="fyCategoryBreakdown"></div>
-          </div>
-        </div>
-
-        <div class="card" style="margin-top:1.5rem">
-          <div class="card-title">Key Insights</div>
-          <div id="fyInsights" style="margin-top:1rem">
-            <p style="color:var(--text-muted)">Calculating...</p>
-          </div>
+        <div style="margin-top:.75rem;font-size:.78rem;color:var(--muted)">
+          🎯 When this hits zero, your monthly surplus jumps by <strong style="color:var(--green)">₹38,000</strong> overnight.
         </div>
       </div>
 
-    </main>
+      <!-- Alerts -->
+      <div id="alerts-container" class="gap"></div>
 
-    <!-- Mobile Navigation -->
-    <nav class="mobile-nav">
-      <div class="mobile-nav-inner">
-        <div class="mobile-nav-item active" data-page="overview">◉<br>Home</div>
-        <div class="mobile-nav-item" data-page="money">₹<br>Money</div>
-        <div class="mobile-nav-item" data-page="buylist">◎<br>Buys</div>
-        <div class="mobile-nav-item" data-page="savings">◈<br>Savings</div>
-        <div class="mobile-nav-item" data-page="fysummary">📊<br>FY</div>
+      <div class="row-pair">
+        <!-- Emergency Fund -->
+        <div class="card">
+          <div class="section-title">Emergency Fund</div>
+          <div class="ef-grid">
+            <div class="ef-card">
+              <div class="ef-label">💧 Liquid</div>
+              <div class="ef-value green" id="ov-ef-liquid">—</div>
+              <div class="ef-sub">accessible now</div>
+            </div>
+            <div class="ef-card">
+              <div class="ef-label">🔒 Locked</div>
+              <div class="ef-value accent" id="ov-ef-locked">—</div>
+              <div class="ef-sub">FD / long-term</div>
+            </div>
+          </div>
+          <div class="ef-label">Total vs Target</div>
+          <div style="display:flex;justify-content:space-between;font-size:.8rem;margin:.3rem 0">
+            <span id="ov-ef-total-label">—</span><span id="ov-ef-target-label">—</span>
+          </div>
+          <div class="progress-wrap">
+            <div class="progress-fill fill-green" id="ov-ef-bar" style="width:0%"></div>
+          </div>
+          <div style="font-size:.72rem;color:var(--muted);margin-top:.4rem" id="ov-ef-pct">—% of target</div>
+        </div>
+
+        <!-- Category spend alerts -->
+        <div class="card">
+          <div class="section-title">Category Spend This Month</div>
+          <div id="category-spend-overview">—</div>
+        </div>
       </div>
-    </nav>
+
+      <!-- Buy list next unlock -->
+      <div class="card">
+        <div class="section-title">Buy List — Next Unlocks</div>
+        <div id="ov-buy-preview">—</div>
+      </div>
+    </div>
+
+    <!-- ══ MONEY ══ -->
+    <div id="tab-money" class="tab">
+      <div class="page-header">
+        <div class="page-title">Income & <span>Expenses</span></div>
+        <div class="page-sub">Edit any number — syncs automatically.</div>
+      </div>
+
+      <!-- Income -->
+      <div class="card gap">
+        <div class="section-title">Primary Income</div>
+        <table>
+          <tr><th>Source</th><th>Amount (₹)</th></tr>
+          <tr>
+            <td>Your net monthly income</td>
+            <td><input class="edit-input" id="inc-self" type="number" oninput="recalc()" placeholder="0"></td>
+          </tr>
+          <tr>
+            <td>Wife's net monthly income</td>
+            <td><input class="edit-input" id="inc-wife" type="number" oninput="recalc()" placeholder="0"></td>
+          </tr>
+        </table>
+        <div style="margin-top:.75rem;font-size:.82rem;color:var(--muted)">
+          Total income: <strong id="money-total-income" style="color:var(--text)">—</strong>
+        </div>
+      </div>
+
+      <!-- Savings target -->
+      <div class="card gap">
+        <div class="section-title">Savings Target</div>
+        <div style="display:flex;align-items:center;gap:1rem">
+          <label class="inline-label" style="margin:0;min-width:160px">Target savings rate (%)</label>
+          <input class="big-input" id="target-rate" type="number" min="0" max="100" oninput="recalc()" style="max-width:120px" placeholder="30">
+          <span style="font-size:.82rem;color:var(--muted)">Current: <strong id="money-curr-rate">—</strong></span>
+        </div>
+      </div>
+
+      <!-- Expenses -->
+      <div class="card gap">
+        <div class="section-title">Monthly Expenses</div>
+        <table id="expenses-table">
+          <thead><tr><th>Category</th><th>Item</th><th>Budget (₹)</th><th></th></tr></thead>
+          <tbody id="expenses-body"></tbody>
+        </table>
+        <button class="add-btn" onclick="addExpenseRow()">+ Add expense</button>
+        <div style="margin-top:.75rem;font-size:.82rem;color:var(--muted)">
+          Total expenses: <strong id="money-total-expenses" style="color:var(--text)">—</strong>
+          &nbsp;|&nbsp; Surplus: <strong id="money-surplus" style="color:var(--green)">—</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ WEEKLY TRACKER ══ -->
+    <div id="tab-weekly" class="tab">
+      <div class="page-header">
+        <div class="page-title">Sunday <span>Check-in</span></div>
+        <div class="page-sub">Tap every Sunday. Add what you spent. See what's left.</div>
+      </div>
+
+      <div id="weekly-cards"></div>
+    </div>
+
+    <!-- ══ BUY LIST ══ -->
+    <div id="tab-buylist" class="tab">
+      <div class="page-header">
+        <div class="page-title">Buy <span>List</span></div>
+        <div class="page-sub">Items unlock as your Emergency Fund grows. Foundation first, treats second. 😄</div>
+      </div>
+
+      <div class="card-grid" style="grid-template-columns:repeat(3,1fr)">
+        <div class="card">
+          <div class="card-label">Total List Value</div>
+          <div class="card-value" id="bl-total">—</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Bought So Far</div>
+          <div class="card-value green" id="bl-bought">—</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Remaining</div>
+          <div class="card-value accent" id="bl-remaining">—</div>
+        </div>
+      </div>
+
+      <div class="card gap">
+        <div class="section-title">Emergency Fund: <span id="bl-ef-pct-label" style="color:var(--accent)">0%</span> reached</div>
+        <div class="progress-wrap" style="height:8px;margin-bottom:1rem">
+          <div class="progress-fill fill-green" id="bl-ef-bar" style="width:0%"></div>
+        </div>
+        <table>
+          <thead><tr><th>✓</th><th>Item</th><th>Cost</th><th>Unlocks at</th><th>Status</th><th></th></tr></thead>
+          <tbody id="buylist-body"></tbody>
+        </table>
+        <button class="add-btn" onclick="addBuyItem()">+ Add item</button>
+      </div>
+    </div>
+
+    <!-- ══ SAVINGS ══ -->
+    <div id="tab-savings" class="tab">
+      <div class="page-header">
+        <div class="page-title">Savings & <span>Emergency Fund</span></div>
+        <div class="page-sub">Target: 1.5× monthly expenses. Split into liquid and locked.</div>
+      </div>
+
+      <div class="ef-grid gap" style="grid-template-columns:1fr 1fr 1fr">
+        <div class="card">
+          <div class="card-label">💧 Liquid Fund</div>
+          <div class="card-value green" id="sav-liquid">—</div>
+          <div class="card-sub">accessible now</div>
+        </div>
+        <div class="card">
+          <div class="card-label">🔒 Locked</div>
+          <div class="card-value accent" id="sav-locked">—</div>
+          <div class="card-sub">FD / NPS / PPF</div>
+        </div>
+        <div class="card">
+          <div class="card-label">🎯 Target (1.5×)</div>
+          <div class="card-value" id="sav-target">—</div>
+          <div class="card-sub" id="sav-target-sub">1.5× monthly expenses</div>
+        </div>
+      </div>
+
+      <div class="card gap">
+        <div class="section-title">Fund Progress</div>
+        <div style="margin-bottom:.5rem;font-size:.82rem">
+          Liquid: <strong id="sav-liq-label">—</strong> &nbsp;|&nbsp; Total: <strong id="sav-tot-label">—</strong> &nbsp;|&nbsp; Target: <strong id="sav-tgt-label">—</strong>
+        </div>
+        <div class="progress-wrap" style="height:10px"><div class="progress-fill fill-green" id="sav-bar" style="width:0%"></div></div>
+        <div style="font-size:.72rem;color:var(--muted);margin-top:.4rem" id="sav-bar-pct">—% of target reached</div>
+
+        <div style="margin-top:1.25rem">
+          <label class="inline-label">💧 Liquid savings (₹)</label>
+          <input class="big-input" id="sav-liquid-input" type="number" oninput="recalc()" placeholder="0" style="max-width:200px">
+        </div>
+        <div style="margin-top:.75rem">
+          <label class="inline-label">Monthly contribution to liquid fund (₹)</label>
+          <input class="big-input" id="sav-contribution" type="number" oninput="recalc()" placeholder="0" style="max-width:200px">
+        </div>
+        <div style="font-size:.82rem;color:var(--muted);margin-top:.6rem">
+          At this rate, liquid target reached in: <strong id="sav-months-to-target" style="color:var(--accent)">—</strong>
+        </div>
+      </div>
+
+      <div class="card gap">
+        <div class="section-title">Locked / Long-term Savings</div>
+        <table>
+          <thead><tr><th>Name</th><th>Type</th><th>Amount (₹)</th><th></th></tr></thead>
+          <tbody id="locked-body"></tbody>
+        </table>
+        <button class="add-btn" onclick="addLockedEntry()">+ Add entry</button>
+        <div style="margin-top:.75rem;font-size:.82rem;color:var(--muted)">
+          Total locked: <strong id="sav-locked-total" style="color:var(--accent)">—</strong>
+        </div>
+      </div>
+
+      <!-- Debt settings -->
+      <div class="card">
+        <div class="section-title">⚙️ Debt Freedom Counter Settings</div>
+        <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-top:.25rem">
+          <div>
+            <label class="inline-label">Months remaining on loan</label>
+            <input class="big-input" id="debt-months-input" type="number" oninput="recalc()" placeholder="e.g. 156" style="max-width:160px">
+          </div>
+          <div>
+            <label class="inline-label">Total loan tenure (months)</label>
+            <input class="big-input" id="debt-tenure-input" type="number" oninput="recalc()" placeholder="e.g. 180" style="max-width:160px">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ FY SUMMARY ══ -->
+    <div id="tab-fy" class="tab">
+      <div class="page-header">
+        <div class="page-title">FY <span>Summary</span></div>
+        <div class="page-sub">April 2025 – March 2026. Full financial year at a glance.</div>
+      </div>
+      <div class="card-grid">
+        <div class="card"><div class="card-label">Total Earned</div><div class="card-value accent" id="fy-earned">—</div></div>
+        <div class="card"><div class="card-label">Total Spent</div><div class="card-value" id="fy-spent">—</div></div>
+        <div class="card"><div class="card-label">Net Saved</div><div class="card-value green" id="fy-saved">—</div></div>
+        <div class="card"><div class="card-label">Avg Savings Rate</div><div class="card-value" id="fy-rate">—</div></div>
+      </div>
+      <div class="card gap">
+        <div class="section-title">Month-wise Breakdown</div>
+        <table><thead><tr><th>Month</th><th>Income</th><th>Expenses</th><th>Saved</th></tr></thead>
+        <tbody id="fy-monthly"></tbody></table>
+      </div>
+      <div class="flex-row">
+        <div class="card">
+          <div class="section-title">Category Spending (FY)</div>
+          <div id="fy-cats">—</div>
+        </div>
+        <div class="card">
+          <div class="section-title">Key Insights</div>
+          <div id="fy-insights" style="font-size:.83rem;line-height:1.7;color:var(--muted)">Calculating…</div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Mobile nav -->
+<nav class="mobile-nav">
+  <div class="mobile-nav-inner">
+    <div class="mnav-item active" onclick="switchTab('overview')"><div class="mnav-icon">◉</div>Home</div>
+    <div class="mnav-item" onclick="switchTab('money')"><div class="mnav-icon">₹</div>Money</div>
+    <div class="mnav-item" onclick="switchTab('weekly')"><div class="mnav-icon">📅</div>Weekly</div>
+    <div class="mnav-item" onclick="switchTab('buylist')"><div class="mnav-icon">◎</div>Buys</div>
+    <div class="mnav-item" onclick="switchTab('savings')"><div class="mnav-icon">◈</div>Savings</div>
+    <div class="mnav-item" onclick="switchTab('fy')"><div class="mnav-icon">📊</div>FY</div>
   </div>
+</nav>
 
-  <script>
-    // ============ CONFIG ============
-    const BIN_ID = '69db8d30aaba882197ee754c';
-    const API_KEY = '$2a$10$XmC1OBk7Fp2wYABWWCoFjOz0nTZ.EzXsWqkn9i3/7pfFhy/aAc5lG';
-    const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+<script>
+// ══════════════════════════════════════════
+//  CONFIG
+// ══════════════════════════════════════════
+const BIN_ID  = '69db8d30aaba882197ee754c';
+const API_KEY = '$2a$10$XmC1OBk7Fp2wYABWWCoFjOz0nTZ.EzXsWqkn9i3/7pfFhy/aAc5lG';
+const BASE    = 'https://api.jsonbin.io/v3/b';
 
-    // ============ STATE ============
-    let data = {
-      targetRate: 42,
-      income: { primary1: 220000, primary2: 50000, additional: [] },
-      expenses: [
-        { category: 'Housing', item: 'Rent', amount: 36000 },
-        { category: 'Housing', item: 'Commute', amount: 9400 },
-        { category: 'Housing', item: 'Furniture (amortized)', amount: 5556 },
-        { category: 'Utilities', item: 'Maid', amount: 10000 },
-        { category: 'Utilities', item: 'Electricity', amount: 4000 },
-        { category: 'Utilities', item: 'Gas', amount: 500 },
-        { category: 'Utilities', item: 'Mobile', amount: 500 },
-        { category: 'Utilities', item: 'Internet', amount: 1500 },
-        { category: 'Utilities', item: 'Water', amount: 500 },
-        { category: 'Food', item: 'Ration - Staple', amount: 5000 },
-        { category: 'Food', item: 'Ration - Fresh', amount: 8000 },
-        { category: 'Food', item: 'Supplements', amount: 10000 },
-        { category: 'Lifestyle', item: 'Gym', amount: 10000 },
-        { category: 'Lifestyle', item: 'Laundry', amount: 500 },
-        { category: 'Lifestyle', item: 'AI Tools', amount: 5000 },
-        { category: 'Lifestyle', item: 'Misc/Eating out', amount: 10000 },
-        { category: 'Subscriptions', item: 'Netflix', amount: 700 },
-        { category: 'Subscriptions', item: 'Headspace', amount: 129 },
-        { category: 'Subscriptions', item: 'iCloud', amount: 219 },
-        { category: 'Subscriptions', item: 'OneDrive', amount: 820 },
-        { category: 'Subscriptions', item: 'Music', amount: 90 },
-        { category: 'Debt', item: 'EMI - Education Loan', amount: 38000 }
-      ],
-      buyList: [
-        { item: 'TV hugest size', category: 'Leisure', cost: 60000, priority: 2, targetMonth: '', saved: 0, bought: false },
-        { item: 'Sofa', category: 'Home', cost: 50000, priority: 1, targetMonth: '', saved: 0, bought: false },
-        { item: 'Workstation table', category: 'Work', cost: 10000, priority: 1, targetMonth: '', saved: 0, bought: false },
-        { item: 'Workstation monitor', category: 'Work', cost: 10000, priority: 1, targetMonth: '', saved: 0, bought: false },
-        { item: 'Shoe stand', category: 'Home', cost: 2000, priority: 3, targetMonth: '', saved: 0, bought: false },
-        { item: 'Air purifier', category: 'Home', cost: 50000, priority: 2, targetMonth: '', saved: 0, bought: false },
-        { item: 'TV Cabinet', category: 'Home', cost: 5000, priority: 2, targetMonth: '', saved: 0, bought: false },
-        { item: 'Watches', category: 'Lifestyle', cost: 5000, priority: 3, targetMonth: '', saved: 0, bought: false },
-        { item: 'Clothes', category: 'Lifestyle', cost: 10000, priority: 2, targetMonth: '', saved: 0, bought: false },
-        { item: 'Trips', category: 'Leisure', cost: 10000, priority: 3, targetMonth: '', saved: 0, bought: false },
-        { item: 'Spects', category: 'Health', cost: 5000, priority: 2, targetMonth: '', saved: 0, bought: false },
-        { item: 'Gifts for relationships', category: 'Leisure', cost: 15000, priority: 2, targetMonth: '', saved: 0, bought: false },
-        { item: 'Charger adopter', category: 'Tech', cost: 500, priority: 3, targetMonth: '', saved: 0, bought: false },
-        { item: 'Health expenses SOS', category: 'Health', cost: 15000, priority: 1, targetMonth: '', saved: 0, bought: false },
-        { item: 'CAR', category: 'Big Purchase', cost: 1500000, priority: 3, targetMonth: '', saved: 0, bought: false },
-        { item: 'Office bag', category: 'Work', cost: 5000, priority: 2, targetMonth: '', saved: 0, bought: false },
-        { item: 'Phone', category: 'Tech', cost: 100000, priority: 2, targetMonth: '', saved: 0, bought: false },
-        { item: 'Curtains', category: 'Home', cost: 10000, priority: 1, targetMonth: '', saved: 0, bought: false }
-      ],
-      savings: { liquid: 0, monthlyContribution: 0, locked: [] },
-      fyData: { months: [] }
-    };
+// ── Indian number formatter ──
+function inr(n) {
+  if (n === null || n === undefined || isNaN(n)) return '—';
+  const num = Math.abs(Math.round(n));
+  const s = num.toString();
+  let result = '';
+  if (s.length <= 3) {
+    result = s;
+  } else {
+    const last3 = s.slice(-3);
+    const rest  = s.slice(0, -3);
+    const groups = [];
+    for (let i = rest.length; i > 0; i -= 2) groups.unshift(rest.slice(Math.max(0, i-2), i));
+    result = groups.join(',') + ',' + last3;
+  }
+  return (n < 0 ? '-' : '') + '₹' + result;
+}
 
-    // ============ NAVIGATION ============
-    document.querySelectorAll('.nav-item, .mobile-nav-item').forEach(item => {
-      item.addEventListener('click', () => {
-        const page = item.dataset.page;
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.nav-item, .mobile-nav-item').forEach(n => n.classList.remove('active'));
-        document.getElementById(`page-${page}`).classList.add('active');
-        document.querySelectorAll(`[data-page="${page}"]`).forEach(n => n.classList.add('active'));
-      });
+// ──────────────────────────────────────────
+//  DATA MODEL
+// ──────────────────────────────────────────
+let data = {
+  incomeSelf: 220000,
+  incomeWife: 50000,
+  targetRate: 30,
+  expenses: [
+    {category:'Housing',   item:'Rent',              amount:36000},
+    {category:'Housing',   item:'Maid',              amount:10000},
+    {category:'Housing',   item:'Electricity',       amount:4000},
+    {category:'Housing',   item:'Gas',               amount:500},
+    {category:'Food',      item:'Ration – Staple',   amount:5000},
+    {category:'Food',      item:'Ration – Fresh',    amount:8000},
+    {category:'Food',      item:'Eating Out',        amount:10000},
+    {category:'Health',    item:'Supplements',       amount:10000},
+    {category:'Health',    item:'Gym',               amount:10000},
+    {category:'Utilities', item:'Mobile',            amount:500},
+    {category:'Utilities', item:'Internet',          amount:1500},
+    {category:'Utilities', item:'Water',             amount:500},
+    {category:'Utilities', item:'Laundry',           amount:500},
+    {category:'Loans',     item:'Education Loan EMI',amount:38000},
+    {category:'Subscriptions',item:'AI Tools',       amount:5000},
+    {category:'Subscriptions',item:'Netflix',        amount:700},
+    {category:'Subscriptions',item:'Headspace',      amount:129},
+    {category:'Subscriptions',item:'iCloud',         amount:219},
+    {category:'Subscriptions',item:'OneDrive',       amount:820},
+  ],
+  // weeklySpend: { 'Eating Out': [w1, w2, w3, w4], ... }
+  weeklySpend: {},
+  buyList: [
+    {item:'Shoe stand',              category:'Home',    cost:2000,    unlockPct:10,  bought:false},
+    {item:'Charger adapter',         category:'Home',    cost:500,     unlockPct:10,  bought:false},
+    {item:'Clothes',                 category:'Home',    cost:10000,   unlockPct:20,  bought:false},
+    {item:'Specs',                   category:'Leisure', cost:5000,    unlockPct:20,  bought:false},
+    {item:'Workstation table',       category:'Work',    cost:10000,   unlockPct:30,  bought:false},
+    {item:'Workstation monitor',     category:'Work',    cost:10000,   unlockPct:30,  bought:false},
+    {item:'Watches',                 category:'Home',    cost:5000,    unlockPct:30,  bought:false},
+    {item:'Trips',                   category:'Leisure', cost:10000,   unlockPct:35,  bought:false},
+    {item:'Gifts for relationships', category:'Leisure', cost:15000,   unlockPct:35,  bought:false},
+    {item:'TV Cabinet',              category:'Leisure', cost:5000,    unlockPct:40,  bought:false},
+    {item:'Curtains',                category:'Home',    cost:10000,   unlockPct:40,  bought:false},
+    {item:'Office bag',              category:'Work',    cost:5000,    unlockPct:40,  bought:false},
+    {item:'Health expenses SOS',     category:'Health',  cost:15000,   unlockPct:50,  bought:false},
+    {item:'Air purifier',            category:'Home',    cost:50000,   unlockPct:50,  bought:false},
+    {item:'Sofa',                    category:'Work',    cost:50000,   unlockPct:60,  bought:false},
+    {item:'TV (biggest size)',       category:'Leisure', cost:60000,   unlockPct:70,  bought:false},
+    {item:'Phone',                   category:'Tech',    cost:100000,  unlockPct:75,  bought:false},
+    {item:'CAR',                     category:'Vehicle', cost:1500000, unlockPct:100, bought:false},
+  ],
+  liquidSavings: 0,
+  monthlyContribution: 0,
+  lockedSavings: [
+    {name:'NPS',          type:'Locked', amount:0},
+    {name:'PPF',          type:'Locked', amount:0},
+    {name:'Stocks',       type:'Locked', amount:0},
+    {name:'Mutual Funds', type:'Locked', amount:0},
+  ],
+  debtMonthsLeft:  156,
+  debtTotalMonths: 180,
+};
+
+// ──────────────────────────────────────────
+//  JSONBIN
+// ──────────────────────────────────────────
+async function loadData() {
+  try {
+    const r = await fetch(`${BASE}/${BIN_ID}/latest`, {headers:{'X-Master-Key':API_KEY}});
+    const j = await r.json();
+    if (j.record) {
+      data = {...data, ...j.record};
+      syncToDOM();
+      recalc();
+      document.getElementById('sync-status').textContent = '✓ loaded';
+    }
+  } catch(e) {
+    document.getElementById('sync-status').textContent = '⚠ offline';
+  }
+}
+
+async function saveData() {
+  syncFromDOM();
+  document.getElementById('sync-status').textContent = 'saving…';
+  try {
+    await fetch(`${BASE}/${BIN_ID}`, {
+      method:'PUT',
+      headers:{'Content-Type':'application/json','X-Master-Key':API_KEY},
+      body: JSON.stringify(data)
     });
+    document.getElementById('sync-status').textContent = '✓ saved';
+    document.getElementById('last-sync').textContent = 'Last sync: ' + new Date().toLocaleTimeString('en-IN');
+  } catch(e) {
+    document.getElementById('sync-status').textContent = '⚠ save failed';
+  }
+}
 
-    // ============ GREETING ============
-    function updateGreeting() {
-      const hour = new Date().getHours();
-      let greeting = 'Good evening.';
-      if (hour < 12) greeting = 'Good morning.';
-      else if (hour < 17) greeting = 'Good afternoon.';
-      document.getElementById('greeting').textContent = greeting;
-    }
+// ──────────────────────────────────────────
+//  DOM → DATA
+// ──────────────────────────────────────────
+function syncFromDOM() {
+  data.incomeSelf         = +document.getElementById('inc-self').value || 0;
+  data.incomeWife         = +document.getElementById('inc-wife').value || 0;
+  data.targetRate         = +document.getElementById('target-rate').value || 30;
+  data.liquidSavings      = +document.getElementById('sav-liquid-input').value || 0;
+  data.monthlyContribution= +document.getElementById('sav-contribution').value || 0;
+  data.debtMonthsLeft     = +document.getElementById('debt-months-input').value || 0;
+  data.debtTotalMonths    = +document.getElementById('debt-tenure-input').value || 180;
 
-    // ============ DATA LOAD/SAVE ============
-    async function loadData() {
-      try {
-        document.getElementById('syncDot').classList.remove('connected');
-        document.getElementById('syncText').textContent = 'syncing...';
-        
-        const res = await fetch(API_URL, {
-          headers: { 'X-Master-Key': API_KEY }
-        });
-        const json = await res.json();
-        if (json.record) {
-          data = { ...data, ...json.record };
-        }
-        
-        document.getElementById('syncDot').classList.add('connected');
-        document.getElementById('syncText').textContent = 'connected';
-        document.getElementById('lastSync').textContent = new Date().toLocaleTimeString();
-        
-        renderAll();
-      } catch (err) {
-        console.error('Load error:', err);
-        document.getElementById('syncText').textContent = 'offline';
-        renderAll();
-      }
-    }
-
-    async function saveData() {
-      try {
-        await fetch(API_URL, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Master-Key': API_KEY
-          },
-          body: JSON.stringify(data)
-        });
-        document.getElementById('lastSync').textContent = new Date().toLocaleTimeString();
-      } catch (err) {
-        console.error('Save error:', err);
-      }
-    }
-
-    function syncData() {
-      loadData();
-    }
-
-    // Debounced save
-    let saveTimeout;
-    function updateData() {
-      // Gather current form values
-      data.income.primary1 = parseFloat(document.getElementById('income1').value) || 0;
-      data.income.primary2 = parseFloat(document.getElementById('income2').value) || 0;
-      data.savings.liquid = parseFloat(document.getElementById('liquidSavings').value) || 0;
-      data.savings.monthlyContribution = parseFloat(document.getElementById('monthlyContribution').value) || 0;
-      
-      clearTimeout(saveTimeout);
-      saveTimeout = setTimeout(() => {
-        saveData();
-        renderAll();
-      }, 500);
-    }
-
-    // ============ TARGET RATE ============
-    function updateTargetRate(val) {
-      data.targetRate = parseFloat(val) || 42;
-      document.getElementById('targetInSummary').textContent = data.targetRate;
-      document.getElementById('ov-target-text').textContent = `target: ${data.targetRate}%+`;
-      document.getElementById('ov-target-display').textContent = `${data.targetRate}%`;
-      updateData();
-    }
-
-    // ============ CALCULATIONS ============
-    function calcTotals() {
-      const primaryIncome = (data.income.primary1 || 0) + (data.income.primary2 || 0);
-      const additionalIncome = (data.income.additional || []).reduce((sum, a) => sum + (a.amount || 0), 0);
-      const totalIncome = primaryIncome + additionalIncome;
-      const totalExpenses = (data.expenses || []).reduce((sum, e) => sum + (e.amount || 0), 0);
-      const surplus = totalIncome - totalExpenses;
-      const savingsRate = totalIncome > 0 ? (surplus / totalIncome) * 100 : 0;
-      
-      return { primaryIncome, additionalIncome, totalIncome, totalExpenses, surplus, savingsRate };
-    }
-
-    // ============ RENDER FUNCTIONS ============
-    function renderAll() {
-      renderOverview();
-      renderMoney();
-      renderBuyList();
-      renderSavings();
-      renderFYSummary();
-    }
-
-    function renderOverview() {
-      const t = calcTotals();
-      document.getElementById('ov-income').textContent = `₹${t.totalIncome.toLocaleString()}`;
-      document.getElementById('ov-expenses').textContent = `₹${t.totalExpenses.toLocaleString()}`;
-      document.getElementById('ov-surplus').textContent = `₹${t.surplus.toLocaleString()}`;
-      document.getElementById('ov-rate').textContent = `${t.savingsRate.toFixed(1)}%`;
-      
-      // Target input
-      document.getElementById('targetRateInput').value = data.targetRate || 42;
-      document.getElementById('ov-target-text').textContent = `target: ${data.targetRate}%+`;
-      document.getElementById('ov-target-display').textContent = `${data.targetRate}%`;
-      document.getElementById('ov-current-rate').textContent = `${t.savingsRate.toFixed(1)}%`;
-      
-      // Progress bar
-      const rateProgress = Math.min(100, (t.savingsRate / data.targetRate) * 100);
-      document.getElementById('rateProgress').style.width = `${rateProgress}%`;
-      
-      // Emergency fund
-      const liquid = data.savings.liquid || 0;
-      const locked = (data.savings.locked || []).reduce((sum, l) => sum + (l.amount || 0), 0);
-      const fundTarget = t.totalExpenses * 1.5;
-      document.getElementById('ov-liquid').textContent = `₹${liquid.toLocaleString()}`;
-      document.getElementById('ov-total-fund').textContent = `₹${(liquid + locked).toLocaleString()}`;
-      document.getElementById('ov-fund-target').textContent = `₹${fundTarget.toLocaleString()}`;
-      const fundProgress = fundTarget > 0 ? Math.min(100, ((liquid + locked) / fundTarget) * 100) : 0;
-      document.getElementById('fundProgress').style.width = `${fundProgress}%`;
-      
-      // Next to buy
-      const nextItem = (data.buyList || []).filter(b => !b.bought).sort((a,b) => a.priority - b.priority)[0];
-      document.getElementById('nextBuyItem').innerHTML = nextItem 
-        ? `<strong>${nextItem.item}</strong> — ₹${nextItem.cost.toLocaleString()} <span class="tag priority-${nextItem.priority}">P${nextItem.priority}</span>`
-        : 'All done! 🎉';
-      
-      // Expense chart
-      renderExpenseChart();
-    }
-
-    function renderExpenseChart() {
-      const categories = {};
-      (data.expenses || []).forEach(e => {
-        categories[e.category] = (categories[e.category] || 0) + e.amount;
+  // expenses
+  data.expenses = [];
+  document.querySelectorAll('#expenses-body tr').forEach(tr => {
+    const inputs = tr.querySelectorAll('input');
+    if (inputs.length >= 3) {
+      data.expenses.push({
+        category: inputs[0].value,
+        item:     inputs[1].value,
+        amount:   +inputs[2].value || 0,
       });
-      const max = Math.max(...Object.values(categories), 1);
-      const container = document.getElementById('expenseChart');
-      container.innerHTML = Object.entries(categories).map(([cat, amt]) => {
-        const height = (amt / max) * 150;
-        return `<div class="bar" style="height:${height}px" title="${cat}: ₹${amt.toLocaleString()}">
-          <span class="bar-label">${cat.slice(0,4)}</span>
-        </div>`;
-      }).join('');
     }
+  });
 
-    function renderMoney() {
-      const t = calcTotals();
-      
-      // Update inputs
-      document.getElementById('income1').value = data.income.primary1 || 0;
-      document.getElementById('income2').value = data.income.primary2 || 0;
-      document.getElementById('targetInSummary').textContent = data.targetRate || 42;
-      
-      // Additional income
-      const addList = document.getElementById('additionalIncomeList');
-      addList.innerHTML = (data.income.additional || []).map((a, i) => `
-        <div class="input-group" style="display:flex;gap:0.5rem;align-items:flex-end">
-          <div style="flex:1">
-            <label>Source</label>
-            <input type="text" value="${a.name || ''}" onchange="updateAdditionalIncome(${i}, 'name', this.value)">
-          </div>
-          <div style="flex:1">
-            <label>Amount</label>
-            <input type="number" value="${a.amount || 0}" onchange="updateAdditionalIncome(${i}, 'amount', this.value)">
-          </div>
-          <button class="btn btn-danger btn-sm" onclick="removeAdditionalIncome(${i})">×</button>
-        </div>
-      `).join('');
-      document.getElementById('additionalTotal').textContent = `₹${t.additionalIncome.toLocaleString()}`;
-      
-      // Summary
-      document.getElementById('sum-primary').textContent = `₹${t.primaryIncome.toLocaleString()}`;
-      document.getElementById('sum-additional').textContent = `₹${t.additionalIncome.toLocaleString()}`;
-      document.getElementById('sum-total').textContent = `₹${t.totalIncome.toLocaleString()}`;
-      document.getElementById('sum-expenses').textContent = `₹${t.totalExpenses.toLocaleString()}`;
-      document.getElementById('sum-surplus').textContent = `₹${t.surplus.toLocaleString()}`;
-      document.getElementById('sum-rate').textContent = `${t.savingsRate.toFixed(1)}%`;
-      document.getElementById('sum-target-met').innerHTML = t.savingsRate >= data.targetRate 
-        ? '<span class="tag tag-green">✓ Met</span>' 
-        : '<span class="tag tag-red">✗ Below</span>';
-      
-      // Expenses table - FULLY EDITABLE
-      const expTable = document.getElementById('expenseTable');
-      expTable.innerHTML = (data.expenses || []).map((e, i) => `
-        <tr>
-          <td>
-            <input type="text" value="${e.category}" 
-              style="background:transparent;border:1px solid transparent;color:var(--text);padding:0.25rem;width:100%;border-radius:4px"
-              onfocus="this.style.borderColor='var(--accent)';this.style.background='var(--bg)'"
-              onblur="this.style.borderColor='transparent';this.style.background='transparent'"
-              onchange="updateExpense(${i}, 'category', this.value)">
-          </td>
-          <td>
-            <input type="text" value="${e.item}" 
-              style="background:transparent;border:1px solid transparent;color:var(--text);padding:0.25rem;width:100%;border-radius:4px"
-              onfocus="this.style.borderColor='var(--accent)';this.style.background='var(--bg)'"
-              onblur="this.style.borderColor='transparent';this.style.background='transparent'"
-              onchange="updateExpense(${i}, 'item', this.value)">
-          </td>
-          <td>
-            <input type="number" value="${e.amount}" 
-              style="background:transparent;border:1px solid transparent;color:var(--text);padding:0.25rem;width:100px;border-radius:4px;text-align:right"
-              onfocus="this.style.borderColor='var(--accent)';this.style.background='var(--bg)'"
-              onblur="this.style.borderColor='transparent';this.style.background='transparent'"
-              onchange="updateExpense(${i}, 'amount', this.value)">
-          </td>
-          <td><span class="delete-btn" onclick="removeExpense(${i})">🗑</span></td>
-        </tr>
-      `).join('');
-    }
+  // weekly spend
+  data.weeklySpend = {};
+  document.querySelectorAll('.week-row-input').forEach(inp => {
+    const cat  = inp.dataset.cat;
+    const week = +inp.dataset.week;
+    if (!data.weeklySpend[cat]) data.weeklySpend[cat] = [0,0,0,0];
+    data.weeklySpend[cat][week] = +inp.value || 0;
+  });
 
-    function renderBuyList() {
-      const sorted = [...(data.buyList || [])].sort((a, b) => a.priority - b.priority);
-      const total = sorted.reduce((s, b) => s + b.cost, 0);
-      const bought = sorted.filter(b => b.bought).reduce((s, b) => s + b.cost, 0);
-      
-      document.getElementById('buy-total').textContent = `₹${total.toLocaleString()}`;
-      document.getElementById('buy-bought').textContent = `₹${bought.toLocaleString()}`;
-      document.getElementById('buy-remaining').textContent = `₹${(total - bought).toLocaleString()}`;
-      
-      const table = document.getElementById('buyTable');
-      table.innerHTML = sorted.map((b, idx) => {
-        const origIdx = data.buyList.indexOf(b);
-        return `
-        <tr style="${b.bought ? 'opacity:0.5;text-decoration:line-through' : ''}">
-          <td>
-            <div class="checkbox ${b.bought ? 'checked' : ''}" onclick="toggleBought(${origIdx})"></div>
-          </td>
-          <td>
-            <input type="text" value="${b.item}" 
-              style="background:transparent;border:1px solid transparent;color:var(--text);padding:0.25rem;width:100%;border-radius:4px"
-              onfocus="this.style.borderColor='var(--accent)';this.style.background='var(--bg)'"
-              onblur="this.style.borderColor='transparent';this.style.background='transparent'"
-              onchange="updateBuyItem(${origIdx}, 'item', this.value)">
-          </td>
-          <td>
-            <select onchange="updateBuyItem(${origIdx}, 'priority', this.value)" 
-              style="background:var(--bg);border:1px solid var(--border);color:var(--text);padding:0.25rem;border-radius:4px">
-              <option value="1" ${b.priority===1?'selected':''}>P1 - High</option>
-              <option value="2" ${b.priority===2?'selected':''}>P2 - Medium</option>
-              <option value="3" ${b.priority===3?'selected':''}>P3 - Low</option>
-            </select>
-          </td>
-          <td>
-            <input type="number" value="${b.cost}" 
-              style="background:transparent;border:1px solid transparent;color:var(--text);padding:0.25rem;width:100px;border-radius:4px"
-              onfocus="this.style.borderColor='var(--accent)';this.style.background='var(--bg)'"
-              onblur="this.style.borderColor='transparent';this.style.background='transparent'"
-              onchange="updateBuyItem(${origIdx}, 'cost', this.value)">
-          </td>
-          <td>
-            <input type="text" value="${b.targetMonth || ''}" placeholder="e.g. May 2026"
-              style="background:transparent;border:1px solid transparent;color:var(--text);padding:0.25rem;width:100px;border-radius:4px"
-              onfocus="this.style.borderColor='var(--accent)';this.style.background='var(--bg)'"
-              onblur="this.style.borderColor='transparent';this.style.background='transparent'"
-              onchange="updateBuyItem(${origIdx}, 'targetMonth', this.value)">
-          </td>
-          <td>
-            <input type="number" value="${b.saved || 0}" 
-              style="background:transparent;border:1px solid transparent;color:var(--text);padding:0.25rem;width:80px;border-radius:4px"
-              onfocus="this.style.borderColor='var(--accent)';this.style.background='var(--bg)'"
-              onblur="this.style.borderColor='transparent';this.style.background='transparent'"
-              onchange="updateBuyItem(${origIdx}, 'saved', this.value)">
-          </td>
-          <td><span class="delete-btn" onclick="removeBuyItem(${origIdx})">🗑</span></td>
-        </tr>
-      `}).join('');
-    }
-
-    function renderSavings() {
-      const t = calcTotals();
-      const liquid = data.savings.liquid || 0;
-      const contribution = data.savings.monthlyContribution || 0;
-      const locked = (data.savings.locked || []).reduce((sum, l) => sum + (l.amount || 0), 0);
-      const target = t.totalExpenses * 1.5;
-      
-      document.getElementById('sav-liquid').textContent = `₹${liquid.toLocaleString()}`;
-      document.getElementById('sav-locked').textContent = `₹${locked.toLocaleString()}`;
-      document.getElementById('sav-target').textContent = `₹${target.toLocaleString()}`;
-      document.getElementById('sav-liq-display').textContent = `₹${liquid.toLocaleString()}`;
-      document.getElementById('sav-total-display').textContent = `₹${(liquid + locked).toLocaleString()}`;
-      document.getElementById('sav-target-display').textContent = `₹${target.toLocaleString()}`;
-      
-      document.getElementById('liquidSavings').value = liquid;
-      document.getElementById('monthlyContribution').value = contribution;
-      
-      const progress = target > 0 ? Math.min(100, (liquid / target) * 100) : 0;
-      document.getElementById('savingsProgress').style.width = `${progress}%`;
-      
-      const remaining = target - liquid;
-      const months = contribution > 0 ? Math.ceil(remaining / contribution) : '∞';
-      document.getElementById('monthsToTarget').textContent = remaining <= 0 ? '✓ Done!' : `${months} months`;
-      
-      // Locked list
-      const lockedList = document.getElementById('lockedSavingsList');
-      lockedList.innerHTML = (data.savings.locked || []).map((l, i) => `
-        <div class="input-group" style="display:flex;gap:0.5rem;align-items:flex-end">
-          <div style="flex:1">
-            <label>Name</label>
-            <input type="text" value="${l.name || ''}" onchange="updateLockedSaving(${i}, 'name', this.value)">
-          </div>
-          <div style="flex:1">
-            <label>Amount</label>
-            <input type="number" value="${l.amount || 0}" onchange="updateLockedSaving(${i}, 'amount', this.value)">
-          </div>
-          <button class="btn btn-danger btn-sm" onclick="removeLockedSaving(${i})">×</button>
-        </div>
-      `).join('');
-      document.getElementById('totalLockedDisplay').textContent = `₹${locked.toLocaleString()}`;
-    }
-
-    function renderFYSummary() {
-      const t = calcTotals();
-      const now = new Date();
-      const fyStartYear = now.getMonth() >= 3 ? now.getFullYear() : now.getFullYear() - 1;
-      
-      document.getElementById('fyStart').textContent = fyStartYear;
-      document.getElementById('fyEnd').textContent = fyStartYear + 1;
-      
-      // Calculate FY totals (assuming constant monthly for now)
-      const monthsElapsed = now.getMonth() >= 3 ? now.getMonth() - 2 : now.getMonth() + 10;
-      const fyEarned = t.totalIncome * monthsElapsed;
-      const fySpent = t.totalExpenses * monthsElapsed;
-      const fySaved = fyEarned - fySpent;
-      
-      document.getElementById('fy-earned').textContent = `₹${fyEarned.toLocaleString()}`;
-      document.getElementById('fy-spent').textContent = `₹${fySpent.toLocaleString()}`;
-      document.getElementById('fy-saved').textContent = `₹${fySaved.toLocaleString()}`;
-      document.getElementById('fy-saved').className = `card-value ${fySaved >= 0 ? 'fy-positive' : 'fy-negative'}`;
-      document.getElementById('fy-rate').textContent = `${t.savingsRate.toFixed(1)}%`;
-      
-      // Monthly table
-      const months = ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'];
-      document.getElementById('fyMonthlyTable').innerHTML = months.slice(0, monthsElapsed).map((m, i) => `
-        <tr>
-          <td>${m}</td>
-          <td>₹${t.totalIncome.toLocaleString()}</td>
-          <td>₹${t.totalExpenses.toLocaleString()}</td>
-          <td style="color:var(--green)">₹${t.surplus.toLocaleString()}</td>
-        </tr>
-      `).join('');
-      
-      // Category breakdown
-      const categories = {};
-      (data.expenses || []).forEach(e => {
-        categories[e.category] = (categories[e.category] || 0) + (e.amount * monthsElapsed);
+  // buy list
+  data.buyList = [];
+  document.querySelectorAll('#buylist-body tr').forEach(tr => {
+    const inputs = tr.querySelectorAll('input[type=text], input[type=number]');
+    const chk    = tr.querySelector('input[type=checkbox]');
+    if (inputs.length >= 3) {
+      data.buyList.push({
+        item:       inputs[0].value,
+        category:   inputs[1].value,
+        cost:       +inputs[2].value || 0,
+        unlockPct:  +inputs[3].value || 50,
+        bought:     chk ? chk.checked : false,
       });
-      document.getElementById('fyCategoryBreakdown').innerHTML = Object.entries(categories)
-        .sort((a, b) => b[1] - a[1])
-        .map(([cat, amt]) => `
-          <div class="summary-row">
-            <span class="summary-label">${cat}</span>
-            <span class="summary-value">₹${amt.toLocaleString()}</span>
-          </div>
-        `).join('');
-      
-      // Insights
-      const topCategory = Object.entries(categories).sort((a, b) => b[1] - a[1])[0];
-      document.getElementById('fyInsights').innerHTML = `
-        <p>💡 Your biggest spending category is <strong>${topCategory?.[0] || 'N/A'}</strong> at ₹${(topCategory?.[1] || 0).toLocaleString()} YTD.</p>
-        <p style="margin-top:0.5rem">📈 At current rate, you'll save <strong>₹${(t.surplus * 12).toLocaleString()}</strong> this full FY.</p>
-        <p style="margin-top:0.5rem">${t.savingsRate >= data.targetRate ? '✅' : '⚠️'} Savings rate is ${t.savingsRate >= data.targetRate ? 'above' : 'below'} your ${data.targetRate}% target.</p>
-      `;
     }
+  });
 
-    // ============ DATA MUTATIONS ============
-    function updateExpense(idx, field, value) {
-      if (field === 'amount') value = parseFloat(value) || 0;
-      data.expenses[idx][field] = value;
-      updateData();
+  // locked
+  data.lockedSavings = [];
+  document.querySelectorAll('#locked-body tr').forEach(tr => {
+    const inputs = tr.querySelectorAll('input');
+    if (inputs.length >= 2) {
+      data.lockedSavings.push({
+        name:   inputs[0].value,
+        type:   'Locked',
+        amount: +inputs[1].value || 0,
+      });
     }
+  });
+}
 
-    function addExpenseRow() {
-      data.expenses.push({ category: 'New', item: 'New expense', amount: 0 });
-      updateData();
-    }
+// ──────────────────────────────────────────
+//  DATA → DOM
+// ──────────────────────────────────────────
+function syncToDOM() {
+  document.getElementById('inc-self').value    = data.incomeSelf;
+  document.getElementById('inc-wife').value    = data.incomeWife;
+  document.getElementById('target-rate').value = data.targetRate;
+  document.getElementById('sav-liquid-input').value    = data.liquidSavings;
+  document.getElementById('sav-contribution').value    = data.monthlyContribution;
+  document.getElementById('debt-months-input').value   = data.debtMonthsLeft;
+  document.getElementById('debt-tenure-input').value   = data.debtTotalMonths;
 
-    function removeExpense(idx) {
-      data.expenses.splice(idx, 1);
-      updateData();
-    }
+  renderExpenses();
+  renderWeekly();
+  renderBuyList();
+  renderLocked();
+}
 
-    function addAdditionalIncome() {
-      if (!data.income.additional) data.income.additional = [];
-      data.income.additional.push({ name: 'New source', amount: 0 });
-      updateData();
-    }
+// ──────────────────────────────────────────
+//  RENDER EXPENSES
+// ──────────────────────────────────────────
+function renderExpenses() {
+  const tbody = document.getElementById('expenses-body');
+  tbody.innerHTML = (data.expenses||[]).map((e,i) => `
+    <tr>
+      <td><input class="edit-input" value="${e.category||''}" oninput="recalc()" placeholder="Category"></td>
+      <td><input class="edit-input" value="${e.item||''}" oninput="recalc()" placeholder="Item"></td>
+      <td><input class="edit-input" type="number" value="${e.amount||0}" oninput="recalc()" style="max-width:110px"></td>
+      <td><button class="del-btn" onclick="delExpense(${i})">✕</button></td>
+    </tr>
+  `).join('');
+}
+function addExpenseRow() {
+  data.expenses.push({category:'',item:'',amount:0});
+  renderExpenses(); recalc();
+}
+function delExpense(i) {
+  data.expenses.splice(i,1); renderExpenses(); recalc();
+}
 
-    function updateAdditionalIncome(idx, field, value) {
-      if (field === 'amount') value = parseFloat(value) || 0;
-      data.income.additional[idx][field] = value;
-      updateData();
-    }
+// ──────────────────────────────────────────
+//  RENDER WEEKLY TRACKER
+// ──────────────────────────────────────────
+function renderWeekly() {
+  const container = document.getElementById('weekly-cards');
+  // get unique categories
+  const cats = [...new Set((data.expenses||[]).map(e => e.category))];
+  container.innerHTML = cats.map(cat => {
+    const budget = (data.expenses||[]).filter(e=>e.category===cat).reduce((s,e)=>s+(e.amount||0),0);
+    if (!budget) return '';
+    const weeks = data.weeklySpend[cat] || [0,0,0,0];
+    const spent = weeks.reduce((a,b)=>a+b,0);
+    const pct   = Math.min(100, budget ? Math.round(spent/budget*100) : 0);
+    const remaining = budget - spent;
+    let fillClass = 'fill-green', alertClass='', alertMsg='';
+    if (pct >= 100)      { fillClass='fill-red';    alertClass='alert-over'; alertMsg='🚨 Over budget!'; }
+    else if (pct >= 90)  { fillClass='fill-orange'; alertClass='alert-90';  alertMsg='⚠️ 90% spent'; }
+    else if (pct >= 75)  { fillClass='fill-yellow'; alertClass='alert-75';  alertMsg='🟡 75% spent'; }
 
-    function removeAdditionalIncome(idx) {
-      data.income.additional.splice(idx, 1);
-      updateData();
-    }
+    const weekInputs = [0,1,2,3].map(w => `
+      <div class="week-entry">
+        <span class="week-tag">Week ${w+1}</span>
+        <input class="week-input week-row-input" type="number" data-cat="${cat}" data-week="${w}"
+          value="${weeks[w]||0}" oninput="recalc()" placeholder="₹0">
+        <span class="week-label">${w===0?'(this week)':''}</span>
+      </div>
+    `).join('');
 
-    function updateBuyItem(idx, field, value) {
-      if (field === 'cost' || field === 'saved' || field === 'priority') value = parseFloat(value) || 0;
-      data.buyList[idx][field] = value;
-      updateData();
-    }
+    return `
+    <div class="card gap">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem">
+        <div>
+          <div class="section-title" style="margin:0">${cat}</div>
+          <div style="font-size:.8rem;color:var(--muted)">Budget: ${inr(budget)} &nbsp;|&nbsp; Spent: <strong style="color:var(--text)">${inr(spent)}</strong> &nbsp;|&nbsp; Left: <strong style="color:${remaining>=0?'var(--green)':'var(--red)'}">${inr(remaining)}</strong></div>
+        </div>
+        ${alertMsg ? `<span class="chip ${alertClass}" style="font-size:.72rem">${alertMsg}</span>` : ''}
+      </div>
+      <div class="progress-wrap" style="margin-bottom:.75rem"><div class="progress-fill ${fillClass}" style="width:${pct}%"></div></div>
+      ${weekInputs}
+    </div>`;
+  }).join('');
+}
 
-    function addBuyItem() {
-      data.buyList.push({ item: 'New item', category: 'General', cost: 0, priority: 2, targetMonth: '', saved: 0, bought: false });
-      updateData();
-    }
+// ──────────────────────────────────────────
+//  RENDER BUY LIST
+// ──────────────────────────────────────────
+function renderBuyList() {
+  const tbody = document.getElementById('buylist-body');
+  tbody.innerHTML = (data.buyList||[]).map((b,i) => `
+    <tr style="${b.bought?'opacity:.45;text-decoration:line-through':''}">
+      <td><input type="checkbox" ${b.bought?'checked':''} onchange="toggleBought(${i})"></td>
+      <td><input class="edit-input" value="${b.item||''}" oninput="recalc()" placeholder="Item"></td>
+      <td><input class="edit-input" value="${b.category||''}" oninput="recalc()" placeholder="Category" style="max-width:90px"></td>
+      <td><input class="edit-input" type="number" value="${b.cost||0}" oninput="recalc()" style="max-width:100px"></td>
+      <td><input class="edit-input" type="number" value="${b.unlockPct||50}" min="0" max="100" oninput="recalc()" style="max-width:70px">%</td>
+      <td id="bl-status-${i}">—</td>
+      <td><button class="del-btn" onclick="delBuyItem(${i})">✕</button></td>
+    </tr>
+  `).join('');
+}
+function toggleBought(i) { data.buyList[i].bought = !data.buyList[i].bought; renderBuyList(); recalc(); }
+function addBuyItem() { data.buyList.push({item:'',category:'',cost:0,unlockPct:50,bought:false}); renderBuyList(); recalc(); }
+function delBuyItem(i) { data.buyList.splice(i,1); renderBuyList(); recalc(); }
 
-    function removeBuyItem(idx) {
-      data.buyList.splice(idx, 1);
-      updateData();
-    }
+// ──────────────────────────────────────────
+//  RENDER LOCKED
+// ──────────────────────────────────────────
+function renderLocked() {
+  const tbody = document.getElementById('locked-body');
+  tbody.innerHTML = (data.lockedSavings||[]).map((s,i) => `
+    <tr>
+      <td><input class="edit-input" value="${s.name||''}" oninput="recalc()" placeholder="Name"></td>
+      <td><span class="chip">Locked</span></td>
+      <td><input class="edit-input" type="number" value="${s.amount||0}" oninput="recalc()" style="max-width:130px"></td>
+      <td><button class="del-btn" onclick="delLocked(${i})">✕</button></td>
+    </tr>
+  `).join('');
+}
+function addLockedEntry() { data.lockedSavings.push({name:'',type:'Locked',amount:0}); renderLocked(); recalc(); }
+function delLocked(i) { data.lockedSavings.splice(i,1); renderLocked(); recalc(); }
 
-    function toggleBought(idx) {
-      data.buyList[idx].bought = !data.buyList[idx].bought;
-      updateData();
-    }
+// ──────────────────────────────────────────
+//  RECALC — central brain
+// ──────────────────────────────────────────
+function recalc() {
+  syncFromDOM();
 
-    function addLockedSaving() {
-      if (!data.savings.locked) data.savings.locked = [];
-      data.savings.locked.push({ name: 'New entry', amount: 0 });
-      updateData();
-    }
+  const totalIncome   = (data.incomeSelf||0) + (data.incomeWife||0);
+  const totalExpenses = (data.expenses||[]).reduce((s,e)=>s+(e.amount||0),0);
+  const surplus       = totalIncome - totalExpenses;
+  const savingsRate   = totalIncome ? (surplus / totalIncome * 100) : 0;
 
-    function updateLockedSaving(idx, field, value) {
-      if (field === 'amount') value = parseFloat(value) || 0;
-      data.savings.locked[idx][field] = value;
-      updateData();
-    }
+  // Emergency fund
+  const lockedTotal = (data.lockedSavings||[]).reduce((s,e)=>s+(e.amount||0),0);
+  const liquidAmt   = data.liquidSavings||0;
+  const efTotal     = liquidAmt + lockedTotal;
+  const efTarget    = totalExpenses * 18; // 1.5 years = 18 months
+  const efPct       = efTarget ? Math.min(100, Math.round(efTotal/efTarget*100)) : 0;
 
-    function removeLockedSaving(idx) {
-      data.savings.locked.splice(idx, 1);
-      updateData();
-    }
+  // ── Overview KPIs
+  set('ov-income',   inr(totalIncome));
+  set('ov-expenses', inr(totalExpenses));
+  set('ov-surplus',  inr(surplus));
+  set('ov-rate',     savingsRate.toFixed(1)+'%');
+  set('ov-rate-sub', `target: ${data.targetRate||30}%`);
+  set('money-total-income',    inr(totalIncome));
+  set('money-total-expenses',  inr(totalExpenses));
+  set('money-surplus',         inr(surplus));
+  set('money-curr-rate',       savingsRate.toFixed(1)+'%');
 
-    // ============ INIT ============
-    updateGreeting();
-    loadData();
-  </script>
+  // Traffic light
+  const light = document.getElementById('ov-light');
+  if (surplus >= 150000) { light.className='savings-light light-green'; light.textContent='🟢 Above ₹1.5L'; }
+  else if (surplus >= 100000) { light.className='savings-light light-yellow'; light.textContent='🟡 ₹1L–₹1.5L'; }
+  else { light.className='savings-light light-red'; light.textContent='🔴 Below ₹1L'; }
+
+  // ── Emergency fund display
+  set('ov-ef-liquid',  inr(liquidAmt));
+  set('ov-ef-locked',  inr(lockedTotal));
+  set('ov-ef-total-label',  inr(efTotal));
+  set('ov-ef-target-label', inr(efTarget));
+  set('ov-ef-pct', `${efPct}% of target`);
+  setWidth('ov-ef-bar', efPct);
+
+  set('sav-liquid',    inr(liquidAmt));
+  set('sav-locked',    inr(lockedTotal));
+  set('sav-target',    inr(efTarget));
+  set('sav-target-sub','1.5× monthly expenses');
+  set('sav-liq-label', inr(liquidAmt));
+  set('sav-tot-label', inr(efTotal));
+  set('sav-tgt-label', inr(efTarget));
+  setWidth('sav-bar',  efPct);
+  set('sav-bar-pct',   `${efPct}% of target reached`);
+  set('sav-locked-total', inr(lockedTotal));
+
+  const monthsToTarget = data.monthlyContribution ? Math.ceil((efTarget - efTotal) / data.monthlyContribution) : null;
+  set('sav-months-to-target', monthsToTarget && monthsToTarget > 0 ? `${monthsToTarget} months` : monthsToTarget <= 0 ? '✓ Target reached!' : '—');
+
+  // ── Debt counter
+  const dm = data.debtMonthsLeft||0;
+  const dt = data.debtTotalMonths||180;
+  const doneMonths = Math.max(0, dt - dm);
+  const debtPct = dt ? Math.round(doneMonths/dt*100) : 0;
+  set('debt-months', `${dm}<span> months left</span>`);
+  setWidth('debt-progress', debtPct);
+  if (dm > 0) {
+    const freeDate = new Date();
+    freeDate.setMonth(freeDate.getMonth() + dm);
+    set('debt-end-label', `Freedom date: ${freeDate.toLocaleDateString('en-IN',{month:'long',year:'numeric'})}`);
+  }
+
+  // ── Category spend overview (alerts)
+  const catBudgets = {};
+  (data.expenses||[]).forEach(e => {
+    if (!catBudgets[e.category]) catBudgets[e.category] = 0;
+    catBudgets[e.category] += (e.amount||0);
+  });
+  const catSpent = {};
+  Object.keys(data.weeklySpend||{}).forEach(cat => {
+    catSpent[cat] = (data.weeklySpend[cat]||[]).reduce((a,b)=>a+b,0);
+  });
+
+  // Build overview alerts
+  let alertsHTML = '';
+  const cats75 = [], cats90 = [], catsOver = [];
+  Object.keys(catBudgets).forEach(cat => {
+    const budget = catBudgets[cat];
+    const spent  = catSpent[cat]||0;
+    if (!budget) return;
+    const pct = spent/budget*100;
+    if (pct >= 100) catsOver.push({cat,spent,budget,pct});
+    else if (pct >= 90) cats90.push({cat,spent,budget,pct});
+    else if (pct >= 75) cats75.push({cat,spent,budget,pct});
+  });
+  if (catsOver.length) alertsHTML += `<div class="card gap" style="border-color:var(--red);background:var(--red-soft)"><div style="font-size:.82rem;font-weight:600;color:var(--red);margin-bottom:.4rem">🚨 Over Budget</div>${catsOver.map(x=>`<div style="font-size:.8rem;color:var(--text)">${x.cat}: ${inr(x.spent)} / ${inr(x.budget)} (${Math.round(x.pct)}%)</div>`).join('')}</div>`;
+  if (cats90.length)  alertsHTML += `<div class="card gap" style="border-color:var(--orange);background:var(--orange-soft)"><div style="font-size:.82rem;font-weight:600;color:var(--orange);margin-bottom:.4rem">⚠️ 90% — Last Chance</div>${cats90.map(x=>`<div style="font-size:.8rem;color:var(--text)">${x.cat}: ${inr(x.spent)} / ${inr(x.budget)}</div>`).join('')}</div>`;
+  if (cats75.length)  alertsHTML += `<div class="card gap" style="border-color:var(--yellow);background:var(--yellow-soft)"><div style="font-size:.82rem;font-weight:600;color:var(--yellow);margin-bottom:.4rem">🟡 75% — Early Warning</div>${cats75.map(x=>`<div style="font-size:.8rem;color:var(--text)">${x.cat}: ${inr(x.spent)} / ${inr(x.budget)}</div>`).join('')}</div>`;
+  document.getElementById('alerts-container').innerHTML = alertsHTML;
+
+  // category spend on overview
+  const csHTML = Object.keys(catBudgets).map(cat => {
+    const budget = catBudgets[cat];
+    const spent  = catSpent[cat]||0;
+    const pct    = budget ? Math.min(100, Math.round(spent/budget*100)) : 0;
+    let fc='fill-green';
+    if (pct>=100) fc='fill-red'; else if(pct>=90) fc='fill-orange'; else if(pct>=75) fc='fill-yellow';
+    return `<div style="margin-bottom:.6rem">
+      <div style="display:flex;justify-content:space-between;font-size:.78rem;margin-bottom:.25rem">
+        <span>${cat}</span><span style="color:var(--muted)">${inr(spent)} / ${inr(budget)}</span>
+      </div>
+      <div class="progress-wrap"><div class="progress-fill ${fc}" style="width:${pct}%"></div></div>
+    </div>`;
+  }).join('');
+  set('category-spend-overview', csHTML);
+
+  // ── Buy list
+  const boughtVal = (data.buyList||[]).filter(b=>b.bought).reduce((s,b)=>s+(b.cost||0),0);
+  const totalVal  = (data.buyList||[]).reduce((s,b)=>s+(b.cost||0),0);
+  set('bl-total',     inr(totalVal));
+  set('bl-bought',    inr(boughtVal));
+  set('bl-remaining', inr(totalVal - boughtVal));
+  set('bl-ef-pct-label', `${efPct}%`);
+  setWidth('bl-ef-bar', efPct);
+
+  (data.buyList||[]).forEach((b,i) => {
+    const el = document.getElementById(`bl-status-${i}`);
+    if (!el) return;
+    const unlocked = efPct >= b.unlockPct;
+    el.innerHTML = b.bought
+      ? `<span class="unlock-badge unlocked">✓ Bought</span>`
+      : unlocked
+      ? `<span class="unlock-badge unlocked">🔓 Unlocked</span>`
+      : `<span class="unlock-badge locked-badge">🔒 at ${b.unlockPct}%</span>`;
+  });
+
+  // buy list preview on overview
+  const nextItems = (data.buyList||[]).filter(b=>!b.bought).slice(0,4);
+  set('ov-buy-preview', nextItems.map(b => {
+    const unlocked = efPct >= b.unlockPct;
+    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid var(--border)">
+      <span style="font-size:.85rem">${b.item}</span>
+      <div style="display:flex;align-items:center;gap:.75rem">
+        <span style="font-size:.8rem;color:var(--muted);font-family:var(--mono)">${inr(b.cost)}</span>
+        ${unlocked
+          ? `<span class="unlock-badge unlocked">🔓 Unlocked</span>`
+          : `<span class="unlock-badge locked-badge">🔒 needs ${b.unlockPct}% EF</span>`}
+      </div>
+    </div>`;
+  }).join(''));
+
+  // ── FY Summary
+  const now = new Date();
+  const fyStart = now.getMonth() >= 3 ? new Date(now.getFullYear(),3,1) : new Date(now.getFullYear()-1,3,1);
+  const monthsDone = Math.min(12, Math.max(1, Math.round((now - fyStart)/(1000*60*60*24*30.4))));
+  set('fy-earned', inr(totalIncome * monthsDone));
+  set('fy-spent',  inr(totalExpenses * monthsDone));
+  set('fy-saved',  inr(surplus * monthsDone));
+  set('fy-rate',   savingsRate.toFixed(1)+'%');
+
+  const MONTHS = ['Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar'];
+  set('fy-monthly', MONTHS.slice(0,monthsDone).map(m=>`
+    <tr><td>${m}</td><td style="font-family:var(--mono)">${inr(totalIncome)}</td><td style="font-family:var(--mono)">${inr(totalExpenses)}</td><td style="color:var(--green);font-family:var(--mono)">${inr(surplus)}</td></tr>
+  `).join(''));
+
+  const catTotals = {};
+  (data.expenses||[]).forEach(e=>{
+    catTotals[e.category]=(catTotals[e.category]||0)+((e.amount||0)*monthsDone);
+  });
+  set('fy-cats', Object.entries(catTotals).sort((a,b)=>b[1]-a[1]).map(([c,v])=>`
+    <div style="display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid var(--border);font-size:.83rem">
+      <span>${c}</span><span style="font-family:var(--mono);color:var(--muted)">${inr(v)}</span>
+    </div>`).join(''));
+
+  const topCat = Object.entries(catTotals).sort((a,b)=>b[1]-a[1])[0];
+  set('fy-insights', `
+    <p>💡 Biggest spend: <strong style="color:var(--text)">${topCat?.[0]||'—'}</strong> at ${inr(topCat?.[1]||0)} YTD.</p>
+    <p style="margin-top:.5rem">📈 Full FY projection: save <strong style="color:var(--green)">${inr(surplus*12)}</strong>.</p>
+    <p style="margin-top:.5rem">${savingsRate>=(data.targetRate||30)?'✅ On track!':'⚠️ Below target.'} Rate: ${savingsRate.toFixed(1)}% vs target ${data.targetRate||30}%.</p>
+    <p style="margin-top:.5rem">🎓 Loan frees up ${inr(38000)}/month in ~${dm} months.</p>
+  `);
+
+  // re-render weekly to reflect updated weekly spend
+  renderWeekly();
+}
+
+// ──────────────────────────────────────────
+//  HELPERS
+// ──────────────────────────────────────────
+function set(id, html) {
+  const el = document.getElementById(id);
+  if (el) el.innerHTML = html;
+}
+function setWidth(id, pct) {
+  const el = document.getElementById(id);
+  if (el) el.style.width = Math.min(100,Math.max(0,pct))+'%';
+}
+
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.querySelectorAll('.mnav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('tab-'+name)?.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>{ if(n.textContent.toLowerCase().includes(name.slice(0,3))) n.classList.add('active'); });
+  document.querySelectorAll('.mnav-item').forEach(n=>{ if(n.textContent.toLowerCase().includes(name.slice(0,3))) n.classList.add('active'); });
+}
+
+function setGreeting() {
+  const h = new Date().getHours();
+  const el = document.getElementById('greeting-time');
+  if (el) el.textContent = h<12?'morning':h<17?'afternoon':'evening';
+}
+
+// ──────────────────────────────────────────
+//  INIT
+// ──────────────────────────────────────────
+window.onload = async () => {
+  setGreeting();
+  syncToDOM();
+  recalc();
+  await loadData();
+  // auto-save on input after 2s debounce
+  let saveTimer;
+  document.body.addEventListener('input', () => {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(saveData, 2000);
+  });
+};
+</script>
 </body>
 </html>
